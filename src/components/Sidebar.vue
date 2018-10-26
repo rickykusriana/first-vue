@@ -7,12 +7,22 @@
                 <b>Navigation</b>
                 <ul class="toc-nav">
 
-                    <li class="done"><router-link to="/dashboard">Dashboard</router-link></li>
-                    <li class="done"><router-link to="/form">Form</router-link></li>
-                    <li class="done"><router-link to="/user/1234">Menu 2</router-link></li>
+                    <li class="done"><router-link to="/home">Home</router-link></li>
+                    <li class="done"><router-link to="/blog">Blog</router-link></li>
+                    <li class="done"><router-link to="/user/1234">Tutorial</router-link></li>
 
                 </ul>
             </div>
+
+            <div class="doc-nav-item">
+                <b>Useful API</b>
+                <ul class="toc-nav">
+                    <li class="done"><router-link to="/api/guest_info">You is Here</router-link></li>
+                    <li class="done"><router-link to="/api/1">Prayer Schedule</router-link></li>
+                    <li class="done"><router-link to="/api/2">Api 2</router-link></li>
+                </ul>
+            </div>
+
             <div class="doc-nav-item">
                 <b>Our Team</b>
                 <ul class="toc-nav">
