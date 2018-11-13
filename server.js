@@ -1,13 +1,22 @@
-// server.js
-var express = require('express');
-var serveStatic = require('serve-static');
-var path = require('path');
+const express = require('express')
+const serveStatic = require('serve-static')
+const path = require('path')
 
-app = express();
+// create the express app
+const app = express()
 
-app.use(serveStatic(__dirname + "/dist"));
+// create middleware to handle the serving the app
+app.use("/", serveStatic( path.join(__dirname, '/dist') ))
 
-var port = process.env.PORT || 8080;
-app.listen(port);
+// Catch all routes and redirect to the index file
+app.get('*', function (req, res) {
+    res.sendFile(__dirname + '/dist/index.html')
+})
 
-console.log('server started '+ port);
+// Create default port to serve the app on
+const port = process.env.PORT || 5000
+
+app.listen(port)
+// Log to feedback that this is actually running
+
+console.log('Server started on port ' + port)
