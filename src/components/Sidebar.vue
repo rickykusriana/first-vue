@@ -18,7 +18,7 @@
                 <b>Useful API</b>
                 <ul class="toc-nav">
                     <li class="done"><router-link to="/api/guest_info">You is Here</router-link></li>
-                    <li class="done"><router-link to="/api/1">Prayer Schedule</router-link></li>
+                    <li class="done"><router-link to="/api/prayer_schedule">Prayer Schedule</router-link></li>
                     <li class="done"><router-link to="/api/2">Api 2</router-link></li>
                 </ul>
             </div>

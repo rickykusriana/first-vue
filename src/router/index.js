@@ -9,6 +9,7 @@ import Profile from '@/modules/profile/Profile.vue'
 
 import Calendar from '@/modules/public_api/Calendar.vue'
 import Guest from '@/modules/public_api/Guest.vue'
+import Pray from '@/modules/public_api/Pray_schedule.vue'
 
 Vue.use(VueRouter);
 
@@ -41,6 +42,11 @@ var routes = [
         path: '/api/guest_info',
         name: 'Guest',
         component: Guest
+    },
+    {
+        path: '/api/prayer_schedule',
+        name: 'Pray',
+        component: Pray
     },
 
     {

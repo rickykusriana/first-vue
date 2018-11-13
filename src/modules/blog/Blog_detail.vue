@@ -4,7 +4,7 @@
 		<hr>
 		<div class="row">
 			<div v-for="post of posts" class="cell-md-12 p-0 m-0">
-				<div class="card-content pl-2 pr-2">						
+				<div class="card-content pl-2 pr-2">
 					<p class="fg-gray">Posted on {{ post.created_at }}</p>
 					<span v-html="post.post_content"></span>
 				</div>
