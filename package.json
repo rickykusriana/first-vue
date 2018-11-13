@@ -1,6 +1,8 @@
 {
   "name": "first-vue",
   "version": "0.1.0",
+  "description": "Trying for vuejs",
+  "author": "Ricky Kusriana Subagja <rickykusriana@gmail.com>",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
