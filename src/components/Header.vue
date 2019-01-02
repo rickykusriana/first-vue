@@ -1,21 +1,28 @@
 <template>
     <div class="container-fluid bg-darkCobalt fg-white pos-fixed fixed-top z-top">
         <header class="app-bar container bg-darkCobalt fg-white pos-relative app-bar-expand-md" data-role="appbar">
-            <a href="/" class="brand fg-white no-hover">Hello, world</a>
+            <a href="/" class="brand fg-white no-hover"><b>Hello</b>, world</a>
             <ul class="app-bar-menu ml-auto">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="intro.html">Guide</a></li>
-                <li><a href="examples.html">Examples</a></li>
-                <li class="d-none"><a href="#">Builder</a></li>
+                <li><router-link @click.native="closeMenu()" to="/home">Home</router-link></li>
+                <li><router-link @click.native="closeMenu()" to="/blog">Blog</router-link></li>
+                <li><router-link @click.native="closeMenu()" to="/api/guest_info">You is Here</router-link></li>
                 <li><a href="sponsors.html">Sponsors</a></li>
-                <li><a href="https://forum.metroui.org.ua">Forum</a></li>
+                <li><router-link @click.native="closeMenu()" to="/profile/rickykusriana">About Me</router-link></li>
             </ul>
         </header>
     </div>
 </template>
 
 <script>
+    
     export default {
-        name: 'Header'
+        name: 'Header',
+        methods: {
+            closeMenu() {
+                $('.hamburger').removeClass('active');
+                $('.app-bar-menu').addClass('collapsed');
+                $('.app-bar-menu').hide();
+            }
+        }
     }
 </script>

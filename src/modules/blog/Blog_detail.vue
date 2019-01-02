@@ -1,14 +1,25 @@
 <template>
-	<main v-if="posts && posts.length" class="cell-md-11 cell-xl-10 order-1 pr-1-sx pl-1-sx pr-5-md pl-5-md">
-		<h4>{{ post_title }}</h4>
+	<main v-if="posts.title" class="cell-md-11 cell-xl-10 order-1 pr-1-sx pl-1-sx pr-5-md pl-5-md">
+		<h4>{{ posts.title }}</h4>
 		<hr>
 		<div class="row">
-			<div v-for="post of posts" class="cell-md-12 p-0 m-0">
-				<div class="card-content pl-2 pr-2">
-					<p class="fg-gray">Posted on {{ post.created_at }}</p>
-					<span v-html="post.post_content"></span>
+			<div class="cell-md-12">
+				<div class="card-content">
+					<p class="fg-gray">
+						<span class="mif-alarm"></span> {{ posts.published }} | 
+						<span class="mif-user"></span> {{ posts.author.displayName == 'Unknown' ? 'Ricky Kusriana Subagja' : posts.author.displayName }}
+					</p>
+					<p v-html="posts.content"></p>
 				</div>
 			</div>
+
+			<div class="cell-lg-12 cell-sm-12 pr-1 mr-1">
+				<hr>
+				<router-link class="button secondary mt-2 float-right" :to="'/blog'">
+					<span class="mif-arrow-left"></span> Back to List
+				</router-link>
+			</div>
+
 		</div>
 	</main>
 </template>
@@ -34,16 +45,17 @@
 
 		data() {
 			return {
-				post_title: '...',
-				posts: [],
+				posts: []
 			}
 		},
 		created() {
 			// var api = 'http://localhost/masterapp/api/post/blog?id='+this.getPostID()+'&X-API-KEY=SeVf4BIX2R8KmZaE7JwoD1CgUkz6OLyQpMdTtG0r';
-			var api = 'http://kodokode.com/api/post/blog?id='+this.getPostID()+'&X-API-KEY=SeVf4BIX2R8KmZaE7JwoD1CgUkz6OLyQpMdTtG0r';
+			// var api = 'http://kodokode.com/api/post/blog?id='+this.getPostID()+'&X-API-KEY=SeVf4BIX2R8KmZaE7JwoD1CgUkz6OLyQpMdTtG0r';
+
+			var api = 'https://www.googleapis.com/blogger/v3/blogs/9128430119229959313/posts/'+this.getPostID()+'?key=AIzaSyBntE0pCcddmdpOkEfjg0bbw1kHSZ1Q5is';
+			
 			Axios.get(api)
 				.then(response => {
-					this.post_title = response.data[0].post_title
 					this.posts = response.data
 				})
 		}
