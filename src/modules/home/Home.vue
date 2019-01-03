@@ -4,7 +4,7 @@
 			<h1>Welcome</h1>
 			<hr>
 			<p class="text-leader">
-				Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod.
+				Hi, nice to meet you. Come here let's make a changing, <br> there is still time for a cup of coffee
 			</p>
 		</div>
 	</main>
