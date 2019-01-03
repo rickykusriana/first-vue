@@ -62,10 +62,9 @@ const router = new VueRouter({
         },
 
         {
-            path: '/profile/:name',
+            path: '/profile',
             name: 'Profile',
-            component: Profile,
-            props: true
+            component: Profile
         },
         {
             path: '/',
