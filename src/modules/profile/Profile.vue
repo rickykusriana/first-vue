@@ -3,13 +3,14 @@
 		<h4>About Me</h4>
 		<hr>
 		<div class="row">
-			<div class="cell-md-12">				
+			<div class="cell-md-12">
 				<p>{{ profile.full_name }}</p>
 				<span class="fg-gray">
 					{{ profile.about }}
 				</span>
+				<p>{{ profile.bio }}</p>
 
-				<div class="example">
+				<div class="example text-center">
 					<span v-for="row of profile.link_profile" :key="row.id">
 						<a target="_blank" :href="row.app_url" :class="'button '+row.app_color+' outline cell-md-2 cell-xs-12'">
 							<span :class="row.app_icon"></span> {{ row.app_name }}

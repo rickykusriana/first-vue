@@ -6,9 +6,11 @@ import Home from '@/modules/home/Home.vue'
 import Blog from '@/modules/blog/Blog.vue'
 import Blog_detail from '@/modules/blog/Blog_detail.vue'
 import Profile from '@/modules/profile/Profile.vue'
+import Portfolio from '@/modules/portfolio/Portfolio.vue'
+import Portfolio_detail from '@/modules/portfolio/Portfolio_detail.vue'
 
-import Calendar from '@/modules/public_api/Calendar.vue'
 import Guest from '@/modules/public_api/Guest.vue'
+import Calendar from '@/modules/public_api/Calendar.vue'
 import Pray from '@/modules/public_api/Pray_schedule.vue'
 
 Vue.use(VueRouter);
@@ -19,12 +21,14 @@ const router = new VueRouter({
     mode: 'history',
 
     routes: [
+        // Home
         {
             path: '/home',
             name: 'Home',
             component: Home
         },
 
+        // Blog
         {
             path: '/blog',
             name: 'Blog',
@@ -36,7 +40,6 @@ const router = new VueRouter({
             component: Blog,
             props: true
         },
-
         {
             path: '/blog/:id/:meta_url',
             name: 'Blog_detail',
@@ -44,10 +47,24 @@ const router = new VueRouter({
             props: true
         },
 
+        // Portfolio
         {
-            path: '/api/calendar',
-            name: 'Calendar',
-            component: Calendar
+            path: '/portfolio',
+            name: 'Portfolio',
+            component: Portfolio
+        },
+        {
+            path: '/portfolio/:detail',
+            name: 'Portfolio_detail',
+            component: Portfolio,
+            props: true
+        },
+
+        // Profile
+        {
+            path: '/profile',
+            name: 'Profile',
+            component: Profile
         },
 
         {
@@ -56,16 +73,16 @@ const router = new VueRouter({
             component: Guest
         },
         {
+            path: '/api/calendar',
+            name: 'Calendar',
+            component: Calendar
+        },
+        {
             path: '/api/prayer_schedule',
             name: 'Pray',
             component: Pray
         },
 
-        {
-            path: '/profile',
-            name: 'Profile',
-            component: Profile
-        },
         {
             path: '/',
             name: 'default',

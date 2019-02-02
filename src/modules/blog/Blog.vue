@@ -4,7 +4,14 @@
 		<hr>
 		<div class="row">
 
-			<div v-for="post of posts" :key="post.id" class="cell-lg-3 cell-sm-6 p-0 m-0">
+			<div class="cell-md-12">
+				<p>From Blogger API </p>
+				<span class="fg-gray">
+					https://rickykusriana.blogspot.com
+				</span>
+			</div>
+
+			<div v-for="post of posts" :key="post.id" class="cell-lg-3 cell-sm-6 pt-4 p-0 m-0">
 
 				<div class="card image-header">
 

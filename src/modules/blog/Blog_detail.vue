@@ -10,6 +10,9 @@
 						<span class="mif-user"></span> {{ posts.author.displayName == 'Unknown' ? 'Ricky Kusriana Subagja' : posts.author.displayName }}
 					</p>
 					<p v-html="posts.content"></p>
+
+					<br>
+					<p align="right">Original Post : <a target="_blank" :href="posts.url">{{ posts.url }}</a></p>
 				</div>
 			</div>
 

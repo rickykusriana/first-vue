@@ -3,8 +3,9 @@
 		<h4>Connection Information</h4>
 		<hr>
 		<div class="row">
-			<div class="cell-md-12 p-0 m-0">
-				<div class="card-content pl-2 pr-2">
+			<div class="cell-md-12">
+				
+				<div class="row mt-2 p-0 m-0">
 					<table class="table cell-border table-border options-table">
 		                <thead>
 			                <tr>
