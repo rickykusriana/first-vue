@@ -8,11 +8,13 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-	  "start": "node server.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "axios": "^0.18.0",
     "express": "^4.16.4",
+    "firebase": "^5.8.2",
+    "latlon-geohash": "^1.1.0",
     "serve-static": "^1.13.2",
     "vue": "^2.5.17",
     "vue-router": "^3.0.1"
