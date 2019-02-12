@@ -76,6 +76,10 @@
                     return Promise.reject(error);
                 }
             );
+        },
+
+        mounted: function () {
+            Metro.init();
         }
     }
 </script>
