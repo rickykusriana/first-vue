@@ -1,27 +1,25 @@
 <template>
-    <div id="app">
-
+    <div class="container-fluid">
+        
         <Header/>
 
-        <div class="container-fluid">
-            <div class="row flex-xl-nowrap">
-                
-                <!-- <Sidebar/> -->
-                <div class="cell-md-1 cell-xl-1 pr-0 "></div>
-                
-                <!-- <main v-if="isLoading" class="cell-md-11 cell-xl-10 order-1 pr-1-sx pl-1-sx pr-5-md pl-5-md">
-                    <div class="d-flex flex-justify-center" style="bottom: -200px;">
-                        <ul class="unstyled-list icon-list text-center">
-                            <li><span class="mif-spinner3 ani-spin"></span></li>
-                        </ul>
-                    </div>
-                </main> -->
-
-                <router-view></router-view>
-                
-            </div>
+        <div class="row flex-xl-nowrap">
+            
+            <!-- <Sidebar/> -->
+            <div class="cell-md-1 cell-xl-1 pr-0 "></div>
+            
+            <!-- <main v-if="isLoading" class="cell-md-11 cell-xl-10 order-1 pr-1-sx pl-1-sx pr-5-md pl-5-md">
+                <div class="d-flex flex-justify-center" style="bottom: -200px;">
+                    <ul class="unstyled-list icon-list text-center">
+                        <li><span class="mif-spinner3 ani-spin"></span></li>
+                    </ul>
+                </div>
+            </main> -->
+            <keep-alive>
+                <router-view v-keep-scroll-position></router-view>
+            </keep-alive>
+            
         </div>
-
     </div>
 </template>
 

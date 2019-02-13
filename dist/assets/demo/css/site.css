@@ -1,6 +1,6 @@
 /*
- * Metro 4 Components Library v4.2.19 build @@build (https://metroui.org.ua)
- * Copyright 2018 Sergey Pimenov
+ * Metro 4 Components Library v4.2.36 build @@build (https://metroui.org.ua)
+ * Copyright 2019 Sergey Pimenov
  * Licensed under MIT
  */
 #spider-navigator {
@@ -73,25 +73,16 @@ pre {
 #sidenav .toc-nav li a {
   color: #989898;
 }
-
-
-.toc-wrapper .toc-nav a a:hover,
-#sidenav .toc-nav a a:hover {
+.toc-wrapper .toc-nav li a:hover,
+#sidenav .toc-nav li a:hover {
   color: #1d1d1d;
 }
-.toc-wrapper .toc-nav a.active,
-#sidenav .toc-nav a.active {
+.toc-wrapper .toc-nav li.active,
+#sidenav .toc-nav li.active {
   font-weight: bold;
 }
-
-/* Custom */
-#sidenav .toc-nav a.active:before {
-   content: "> ";
-}
-
-
-.toc-wrapper .toc-nav a.active ,
-#sidenav .toc-nav a.active  {
+.toc-wrapper .toc-nav li.active a,
+#sidenav .toc-nav li.active a {
   color: #1d1d1d;
 }
 .toc-wrapper .toc-nav ul,
@@ -456,4 +447,30 @@ footer a:hover {
 }
 h1 + .text-leader {
   margin-bottom: 20px;
+}
+.emulator {
+  padding: 0;
+  background: #fff;
+  overflow: hidden;
+  border: 1px solid #eee;
+  position: relative;
+}
+.emulator.galaxy-s5 {
+  height: 640px;
+  width: 360px;
+}
+.emulator.galaxy-s5.landscape {
+  height: 360px;
+  width: 640px;
+}
+.emulator.ipad {
+  height: 1024px;
+  width: 768px;
+}
+.emulator.ipad.landscape {
+  height: 768px;
+  width: 1024px;
+}
+.algolia-autocomplete {
+  width: 100%;
 }

@@ -8,7 +8,11 @@
                 <li><router-link @click.native="closeMenu()" to="/portfolio">Portfolio</router-link></li>
                 <li><router-link @click.native="closeMenu()" to="/blog">Blog</router-link></li>
                 <li><router-link @click.native="closeMenu()" to="/api/guest_info">You is Here</router-link></li>
-                <li><router-link @click.native="closeMenu()" to="/chat" class="text-bold fg-yellow"><span class="d-block ani-vertical">Room Chat</span></router-link></li>
+                <li>
+                    <router-link @click.native="closeMenu()" to="/chat" class="text-bold fg-yellow">
+                        <span :class="this.$route.path != '/chat' ? 'd-block ani-vertical' : 'd-block'">Room Chat</span>
+                    </router-link>
+                </li>
             </ul>
         </header>
     </div>

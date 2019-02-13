@@ -6,108 +6,177 @@
 		
 		<div class="row">
 			<div class="cell-md-12">
-				<div class="mt-2 p-0 m-0">
 
-					<div class="messages" data-role="panel" data-height="400" ref="div_messages">
-						
-						<span class="message" v-for="row in messages" :key="row.key">
+				<div data-role="navview" data-compact="md" data-expanded="lg" data-toggle="#pane-toggle">
 
-							<span v-if="username == row.username">
-								<div class="float-right p-1 bg-lightCyan">
-									<strong>{{ row.username }}</strong> : {{ row.text }}
+	                <nav class="navview-pane mt-2">
+	                    <button class="pull-button">
+							<span class="default-icon-menu"></span>
+						</button>
+
+	                    <div class="suggest-box">
+	                        <input type="text" data-role="input" data-clear-button="false" data-search-button="true">
+	                        <button class="holder">
+	                            <span class="mif-search"></span>
+	                        </button>
+	                    </div>
+
+	                    <ul class="navview-menu">
+	                        <li class="item-separator"></li>
+	                        <li>
+	                            <a href="#">
+	                                <span class="icon"><span class="mif-user-check fg-green"></span></span>
+	                                <span class="caption">User Online</span>
+	                            </a>
+	                        </li>
+	                        <li>
+	                            <a href="#">
+	                                <span class="icon"><span class="mif-apps"></span></span>
+	                                <span class="caption">Apps</span>
+	                            </a>
+	                        </li>
+	                        <li class="active">
+	                            <a href="#">
+	                                <span class="icon"><span class="mif-gamepad"></span></span>
+	                                <span class="caption">Games</span>
+	                            </a>
+	                        </li>
+	                        <li>
+	                            <a href="#" class="dropdown-toggle">
+	                                <span class="icon"><span class="mif-music"></span></span>
+	                                <span class="caption">Music</span>
+	                            </a>
+	                            <ul class="navview-menu" data-role="dropdown">
+	                                <li>
+	                                    <a href="#">
+	                                        <span class="icon"><span class="mif-gamepad"></span></span>
+	                                        <span class="caption">Games</span>
+	                                    </a>
+	                                </li>
+	                                <li>
+	                                    <a href="#">
+	                                        <span class="icon"><span class="mif-film"></span></span>
+	                                        <span class="caption">Movies</span>
+	                                    </a>
+	                                </li>
+	                            </ul>
+	                        </li>
+	                        <li class="disabled">
+	                            <a href="#">
+	                                <span class="icon"><span class="mif-images"></span></span>
+	                                <span class="caption">Images</span>
+	                            </a>
+	                        </li>
+
+	                        <li class="item-separator"></li>
+
+	                        <li>
+	                            <a href="#">
+	                                <span class="icon"><span class="mif-folder"></span></span>
+	                                <span class="caption">Documents</span>
+	                            </a>
+	                        </li>
+	                    </ul>
+	                </nav>
+
+	                <div class="navview-content pl-4-md pt-1">
+
+	                    <div class="pb-1">
+	                        <button id="pane-toggle" class="button square d-none-md"><span class="default-icon-menu"></span></button>
+	                    </div>
+	                    
+	                    <span v-if="username">
+							<keep-alive>
+								<div 
+									class="messages" 
+									ref="div_messages"
+									data-role="panel" 
+									data-height="432"
+									v-keep-scroll-position
+									v-chat-scroll="{always: true, smooth: true}">
+									
+									<div class="message" v-for="row in messages" :key="row.key">
+
+										<div class="d-flex flex-row-r p-1" v-if="username == row.username">
+											<div class="p-2 bg-lightGreen">
+												{{ row.text }}
+											</div>
+										</div>
+
+										<div class="d-flex flex-row p-1" v-else>
+											<div class="p-2 bg-lightGray">
+												<strong>{{ row.username }}</strong><br>
+												{{ row.text }}
+											</div>
+										</div>
+
+									</div>
 								</div>
-								<br><br>
-							</span>
+							</keep-alive>						
+						</span>
 
-							<span v-else>
-								<div class="float-left p-1 bg-lightGray">
-									<strong>{{ row.username }}</strong> : {{ row.text }}
+						<span v-if="!username">
+							<div class="input cell-md-4">
+								<input
+									autofocus
+									required
+									id="text_name"
+									ref="text_name"
+									v-model="text_name"
+									v-on:keyup.enter="updateUsername" 
+									type="text"
+									data-role="input"
+									data-search-button="true"
+									data-search-button-icon="<span class='mif-arrow-right'></span>"
+									class=""
+									placeholder="Input your name here"
+									data-role-input="true">
+
+								<div class="button-group">
+									<button v-on:click="deleteUsername" class="button input-clear-button" tabindex="-1" type="button">
+										<span class="mif-cross"></span>
+									</button>
+									<button v-on:click="updateUsername" class="button input-search-button" tabindex="-1" type="button" style="background-color:#f8f8f8;">
+										<span class="mif-arrow-right"></span>
+									</button>
 								</div>
-								<br><br>
-							</span>
+							</div>
+						</span>
+						<span v-else>
+							<p class="pt-2 pb-2">
+								Hello, <b>{{username}}</b> 
+								<a href="#" class="float-right" v-on:click="deleteUsername">Logout</a>
+							</p>
 
+							<div class="textarea autosize">
+								<textarea 
+									autofocus 
+									id="text_msg" 
+									ref="text_msg"
+									v-model="text_msg"
+									v-on:keyup.ctrl.enter="sendMessage"
+									placeholder="Input message here (Ctrl + Enter to send)"
+									data-role="textarea">
+								</textarea>
+								<div 
+									class="append bg-blue fg-white pt-4 c-pointer" 
+									v-on:click="sendMessage">
+									<span class="mif-arrow-right mif-3x"></span>
+								</div>
+							</div>
 						</span>
 						
-					</div>
-				
-				</div>
-			</div>
+	                </div>
+	            </div>
+
+            </div>
 		</div>
-
-		
-		<div class="row" style="padding-top:20px;">
-
-			<span v-if="!username">
-				<div class="cell-md-12">
-					<div class="input">
-						<input
-							autofocus
-							required
-							id="text_name"
-							ref="text_name"
-							v-model="text_name"
-							v-on:keyup.enter="updateUsername" 
-							type="text"
-							data-role="input"
-							data-search-button="true"
-							data-search-button-icon="<span class='mif-arrow-right'></span>"
-							class=""
-							placeholder="Input your name here"
-							data-role-input="true">
-
-						<div class="button-group">
-							<button v-on:click="deleteUsername" class="button input-clear-button" tabindex="-1" type="button">
-								<span class="mif-cross"></span>
-							</button>
-							<button v-on:click="updateUsername" class="button input-search-button" tabindex="-1" type="button" style="background-color:#f8f8f8;">
-								<span class="mif-arrow-right"></span>
-							</button>
-						</div>
-					</div>
-				</div>
-			</span>
-
-			<span class="cell-md-12" v-else>
-				Hello, <b>{{username}}</b> 
-				<button class="float-right button link mini" v-on:click="deleteUsername">Logout</button><br />
-
-				<div class="textarea autosize">
-					<textarea 
-						autofocus 
-						id="text_msg" 
-						ref="text_msg"
-						v-model="text_msg"
-						placeholder="Input message here" 
-						data-role="textarea"
-						data-append="<span class='mif-leanpub'></span>"
-						class="" 
-						data-role-textarea="true"
-						style="height: 47px;">
-					</textarea>
-					<button 
-						class="button input-clear-button" 
-						tabindex="-1" 
-						type="button" 
-						style="right: 33.5px; height: 47px; padding-top: 5px;">
-						<span class="mif-cross"></span>
-					</button>
-					<button v-on:click="sendMessage" class="button input-search-button append" tabindex="-1" type="button" style="height: 47px; padding-top: 10px">
-						<span class="mif-arrow-right mif-2x"></span>
-					</button>
-				</div>
-
-			</span>
-
-			<!-- For get height of div | DONT REMOVE -->
-			<span style="color:#FFF;">{{ div_height }}</span>
-			
-		</div>
-		
 	</main>
 </template>
 
 <script>
 
+	
 	import firebase from 'firebase/app'
 	import 'firebase/database'
 	// import Geohash from 'latlon-geohash'
@@ -125,14 +194,14 @@
 	let database = firebase.database();
 
 	export default {
+
 		name: 'Chat',
 
 		data() {
 			return {
-				div_height: 0,
 				username: '',
 				text_name: '',
-				text_msg: '',
+				text_msg: null,
 				messages: []
 			}
 		},
@@ -149,6 +218,7 @@
 			},
 
 			deleteUsername() {
+				this.div_height = 0;
 				this.username = '';
 				this.text_name = '';
 			},
@@ -169,12 +239,14 @@
 					}
 				}
 				
-				//Push message to firebase reference
-				if (e.target.value != '' || this.text_msg != '') {
+				// Push message to firebase reference
+				if (e.target.value != '' || this.text_msg != null) {
 					database.ref('messages').push(message);
 				}
+
 				e.target.value = ''
-				this.text_msg = ''
+				this.text_msg = null
+				this.$refs.text_msg.focus()
 			},
 
 			getData() {
@@ -194,16 +266,25 @@
 			},
 		},
 
+		watch: {
+			username(new_username) {
+				localStorage.username = new_username;
+			}
+		},
+
 		mounted() {
+			if (localStorage.username) {
+				this.username = localStorage.username;
+			}
+
 			this.getData()
-			this.$refs.div_messages.scrollTop = this.div_height
 		},
 
 		updated() {
-			this.div_height = this.$refs.div_messages.scrollHeight
-			this.$refs.div_messages.scrollTop = this.div_height
-		},
-		
+			if (this.username) {
+				this.$refs.text_msg.focus()
+			}
+		}
 	}
 
 </script>

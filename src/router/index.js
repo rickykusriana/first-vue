@@ -1,5 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import VueChatScroll from 'vue-chat-scroll'
+import VueKeepScrollPosition from 'vue-keep-scroll-position'
 
 // Init view
 import Home from '@/modules/home/Home.vue'
@@ -14,6 +16,8 @@ import Calendar from '@/modules/public_api/Calendar.vue'
 import Pray from '@/modules/public_api/Pray_schedule.vue'
 
 Vue.use(VueRouter);
+Vue.use(VueChatScroll);
+Vue.use(VueKeepScrollPosition);
 
 const router = new VueRouter({
     linkActiveClass: 'active',
