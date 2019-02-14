@@ -77,6 +77,12 @@ const router = new VueRouter({
             name: 'Chat',
             component: Chat
         },
+        {
+            path: '/chat/:city_code',
+            name: 'Chat',
+            component: Chat,
+            props: true
+        },
 
         {
             path: '/api/guest_info',

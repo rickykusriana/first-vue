@@ -29,12 +29,12 @@
 	                            </a>
 	                        </li>
 	                        
-							<div v-for="row in address" :key="row.city">
+							<div v-for="row in address" :key="row.id">
 								<li>
-									<a href="#">
+									<router-link :to="'/chat/'+getData(row.id, 'code')">
 										<span class="icon"><span class="mif-chevron-right"></span></span>
-										<span class="caption">{{ row.city }}</span>
-									</a>
+										<span class="caption">{{ getData(row.id, 'city') }}</span>
+									</router-link>
 								</li>
 							</div>
 
@@ -132,7 +132,6 @@
 </template>
 
 <script>
-
 	
 	import firebase from 'firebase/app'
 	import 'firebase/database'
@@ -162,9 +161,9 @@
 				text_msg: null,
 				messages: [],
 
+				address: [],
 				room: null,
 				precision: 6,
-				address: [],
 			}
 		},
 
@@ -201,7 +200,6 @@
 					}
 				}
 				
-				// Push message to firebase reference
 				if (e.target.value != '' || this.text_msg != null) {
 
 					let key = this.room.push().key;
@@ -213,11 +211,27 @@
 				this.$refs.text_msg.focus()
 			},
 
-			messageListener () {
+			messageListener() {
 				this.room.child('messages').on('child_added', (snapshot) => {
 					// push the snapshot value into a data attribute
 					this.messages.push(snapshot.val())
 				})
+			},
+
+			getCity() {
+				const itemsRef = database.ref('rooms');
+				itemsRef.on('value', snapshot => {
+					let data = snapshot.val();
+					let address = [];
+					Object.keys(data).forEach(key => {
+						address.push({
+							id: key,
+							username: data[key].username,
+							text: data[key].text
+						});
+					});
+					this.address = address;
+				});
 			},
 
 			// 
@@ -225,11 +239,17 @@
 			init() {
 				if (navigator.geolocation) {
 					navigator.geolocation.getCurrentPosition((position) => {
+						
+						// For get code location 
 						var geohash = Geohash.encode(position.coords.latitude, position.coords.longitude, this.precision);
-						this.room = database.ref().child('rooms/' + geohash)
 
-						this.getAddress(position.coords.latitude, position.coords.longitude)
-						this.messageListener()
+						// API, for get city name location
+						var api = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' + position.coords.latitude + ',' + position.coords.longitude + '&key=AIzaSyBGRvIwip4B9lRqd14sEK5wVlvukKDhID0';
+						Axios.get(api)
+							.then(response => {
+								this.room = database.ref().child('rooms/' + geohash+'_'+response.data.results[0].address_components[6].long_name)
+								this.messageListener()
+							})
 
 					}, (err) => {
 						
@@ -239,19 +259,18 @@
 					console.error('Cannot access geolocation')
 				}
 			},
+			
+			getData(str, type) {
+				var n = str.indexOf("_");
+				if (type == 'code') {
+					return str.substr(0, n);
+				}
+				else {
+					return str.replace(str.substr(0, n)+'_', '');
+				}
 
-			getAddress(latitude, longitude) {
-				var api = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' + latitude + ',' + longitude + '&key=AIzaSyBGRvIwip4B9lRqd14sEK5wVlvukKDhID0';
-				var arrCity;
-				Axios.get(api)
-					.then(response => {
-						var arrCity = {
-							city: response.data.results[0].address_components[6].long_name
-						}
-						
-						this.address.push(arrCity)
-					})
 			},
+
 		},
 
 		watch: {
@@ -266,6 +285,7 @@
 			}
 
 			this.init()
+			this.getCity()
 		},
 
 		updated() {
