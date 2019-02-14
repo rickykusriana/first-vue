@@ -1,7 +1,7 @@
 <template>
 	<main class="cell-md-10 cell-xl-10 order-1 pr-1-sx pl-1-sx pr-5-md pl-5-md">
 
-		<h4>Chat</h4>
+		<h4>Chat Based on Location</h4>
 		<hr>
 		
 		<div class="row">
@@ -25,19 +25,57 @@
 	                        <li class="item-separator"></li>
 	                        <li>
 	                            <a href="#">
-	                                <span class="caption" style="margin-left:-30px;"><b>User online, from</b></span>
+	                                <span class="icon"><span class="mif-user-check fg-green"></span></span>
+	                                <span class="caption">User Online</span>
 	                            </a>
 	                        </li>
-	                        
-							<div v-for="row in address" :key="row.city">
-								<li>
-									<a href="#">
-										<span class="icon"><span class="mif-chevron-right"></span></span>
-										<span class="caption">{{ row.city }}</span>
-									</a>
-								</li>
-							</div>
+	                        <li>
+	                            <a href="#">
+	                                <span class="icon"><span class="mif-apps"></span></span>
+	                                <span class="caption">Apps</span>
+	                            </a>
+	                        </li>
+	                        <li class="active">
+	                            <a href="#">
+	                                <span class="icon"><span class="mif-gamepad"></span></span>
+	                                <span class="caption">Games</span>
+	                            </a>
+	                        </li>
+	                        <li>
+	                            <a href="#" class="dropdown-toggle">
+	                                <span class="icon"><span class="mif-music"></span></span>
+	                                <span class="caption">Music</span>
+	                            </a>
+	                            <ul class="navview-menu" data-role="dropdown">
+	                                <li>
+	                                    <a href="#">
+	                                        <span class="icon"><span class="mif-gamepad"></span></span>
+	                                        <span class="caption">Games</span>
+	                                    </a>
+	                                </li>
+	                                <li>
+	                                    <a href="#">
+	                                        <span class="icon"><span class="mif-film"></span></span>
+	                                        <span class="caption">Movies</span>
+	                                    </a>
+	                                </li>
+	                            </ul>
+	                        </li>
+	                        <li class="disabled">
+	                            <a href="#">
+	                                <span class="icon"><span class="mif-images"></span></span>
+	                                <span class="caption">Images</span>
+	                            </a>
+	                        </li>
 
+	                        <li class="item-separator"></li>
+
+	                        <li>
+	                            <a href="#">
+	                                <span class="icon"><span class="mif-folder"></span></span>
+	                                <span class="caption">Documents</span>
+	                            </a>
+	                        </li>
 	                    </ul>
 	                </nav>
 
@@ -119,8 +157,11 @@
 										<span class="mif-arrow-right mif-3x"></span>
 									</div>
 								</div>
-
 							</div>
+						</div>
+
+						<div id="chat">
+							<input type="text" v-model.trim="messageInput" @keyup.enter="send(messageInput)">
 						</div>
 						
 	                </div>
@@ -137,7 +178,6 @@
 	import firebase from 'firebase/app'
 	import 'firebase/database'
 	import Geohash from 'latlon-geohash'
-	import Axios from 'axios'
 
 	let config = {
 		apiKey: "AIzaSyAf6CpheRBvdE3ou2nQplp-CivMkQQUPPk",
@@ -163,8 +203,9 @@
 				messages: [],
 
 				room: null,
-				precision: 6,
-				address: [],
+				precision: 6, // default precision
+				messageInput: '',
+
 			}
 		},
 
@@ -203,9 +244,7 @@
 				
 				// Push message to firebase reference
 				if (e.target.value != '' || this.text_msg != null) {
-
-					let key = this.room.push().key;
-					this.room.child('messages/' + key).set(message)
+					database.ref('messages').push(message);
 				}
 
 				e.target.value = ''
@@ -213,11 +252,20 @@
 				this.$refs.text_msg.focus()
 			},
 
-			messageListener () {
-				this.room.child('messages').on('child_added', (snapshot) => {
-					// push the snapshot value into a data attribute
-					this.messages.push(snapshot.val())
-				})
+			getData() {
+				const itemsRef = database.ref('messages');
+				itemsRef.on('value', snapshot => {
+					let data = snapshot.val();
+					let messages = [];
+					Object.keys(data).forEach(key => {
+						messages.push({
+							id: key,
+							username: data[key].username,
+							text: data[key].text
+						});
+					});
+					this.messages = messages;
+				});
 			},
 
 			// 
@@ -226,31 +274,29 @@
 				if (navigator.geolocation) {
 					navigator.geolocation.getCurrentPosition((position) => {
 						var geohash = Geohash.encode(position.coords.latitude, position.coords.longitude, this.precision);
+
+						// initilize the room based on geohash
 						this.room = database.ref().child('rooms/' + geohash)
-
-						this.getAddress(position.coords.latitude, position.coords.longitude)
-						this.messageListener()
-
 					}, (err) => {
-						
+						// error handling here
 					})
 				} 
 				else {
 					console.error('Cannot access geolocation')
 				}
 			},
+			send(messageInput) {
+				// A data entry.
+				let data = {
+					message: messageInput
+				};
 
-			getAddress(latitude, longitude) {
-				var api = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' + latitude + ',' + longitude + '&key=AIzaSyBGRvIwip4B9lRqd14sEK5wVlvukKDhID0';
-				var arrCity;
-				Axios.get(api)
-					.then(response => {
-						var arrCity = {
-							city: response.data.results[0].address_components[6].long_name
-						}
-						
-						this.address.push(arrCity)
-					})
+				// Get a key for a new message.
+				let key = this.room.push().key;
+				this.room.child('messages/' + key).set(data)
+
+				// clean the message
+				this.messageInput = ''
 			},
 		},
 
@@ -265,6 +311,7 @@
 				this.username = localStorage.username;
 			}
 
+			this.getData()
 			this.init()
 		},
 
