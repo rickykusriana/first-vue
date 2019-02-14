@@ -4,8 +4,6 @@
 		<h4>Chat</h4>
 		<hr>
 		
-		<button v-on:click="toggleSignIn">TEST LOGIN</button>
-
 		<div class="row">
 			<div class="cell-md-12">
 
@@ -144,10 +142,7 @@
 
 <script>
 	
-	import firebase from 'firebase'
-
 	import database from '../../config/Firebase'
-	import datetime from '../../config/Date_helper'
 	import Geohash from 'latlon-geohash'
 	import Axios from 'axios'
 
@@ -172,45 +167,6 @@
 		},
 
 		methods: {
-			toggleSignIn() {
-
-				// firebase.auth().onAuthStateChanged(function(user) {
-				// 	if (user) {
-				// 		// User is signed in.
-				// 		var isAnonymous = user.isAnonymous;
-				// 		var uid = user.uid;
-				// 		// ...
-				// 	} else {
-				// 		// User is signed out.
-				// 		// ...
-				// 	}
-					
-				// });
-
-				if (firebase.auth().currentUser) {
-					// [START signout]
-					firebase.auth().signOut();
-					// [END signout]
-				} 
-				else {
-					// [START authanon]
-					firebase.auth().signInAnonymously().catch(function(error) {
-						// Handle Errors here.
-						var errorCode = error.code;
-						var errorMessage = error.message;
-						// [START_EXCLUDE]
-						if (errorCode === 'auth/operation-not-allowed') {
-							alert('You must enable Anonymous auth in the Firebase Console.');
-						} 
-						else {
-							console.error(error);
-						}
-						// [END_EXCLUDE]
-					});
-					// [END authanon]
-				}
-			},
-
 			login() {
 				if (this.username) {
 					this.username = this.username
@@ -234,53 +190,28 @@
 				this.is_required = ''
 			},
 
-			sendMessage () {
+			sendMessage() {
 
-				// database.collection('chat').doc(this.room).set({
-				//     username: this.username,
-				// 	text: this.text_msg
-				// })
+				if (this.text_msg) {
 
-				database.collection('chat').doc(this.room).collection('messages').add({
-					username: this.username,
-					text: this.text_msg,
-					created_at: datetime
-				})
+					let message;
+					message = {
+						username: this.username,
+						text: this.text_msg
+					}
 
-				// database.collection('chat').add({
-				// 	username: this.username,
-				// 	text: this.text_msg
-				// })
-				.then(function (docRef) {
-					console.log('Document written with ID: ', docRef.id)
-				})
-				.catch(function (error) {
-					console.error('Error adding document: ', error)
-				})
+					let key = this.room.push().key;
+					this.room.child('messages/' + key).set(message)
+
+					this.text_msg = ''
+					this.is_required = ''
+				}
+				else {
+					this.is_required = 'This field is required'
+				}
+
+				this.$refs.text_msg.focus()
 			},
-
-			// sendMessage() {
-
-			// 	if (this.text_msg) {
-
-			// 		let message;
-			// 		message = {
-			// 			username: this.username,
-			// 			text: this.text_msg
-			// 		}
-
-			// 		let key = this.room.push().key;
-			// 		this.room.child('messages/' + key).set(message)
-
-			// 		this.text_msg = ''
-			// 		this.is_required = ''
-			// 	}
-			// 	else {
-			// 		this.is_required = 'This field is required'
-			// 	}
-
-			// 	this.$refs.text_msg.focus()
-			// },
 
 			messageListener() {
 				this.room.child('messages').on('child_added', (snapshot) => {
@@ -318,8 +249,7 @@
 						var api = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' + position.coords.latitude + ',' + position.coords.longitude + '&key=AIzaSyBGRvIwip4B9lRqd14sEK5wVlvukKDhID0';
 						Axios.get(api)
 							.then(response => {
-								// this.room = database.ref().child('rooms/' + geohash+'_'+response.data.results[0].address_components[6].long_name)
-								this.room = response.data.results[0].address_components[6].long_name
+								this.room = database.ref().child('rooms/' + geohash+'_'+response.data.results[0].address_components[6].long_name)
 								this.messageListener()
 							})
 

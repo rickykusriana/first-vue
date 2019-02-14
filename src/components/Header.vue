@@ -10,7 +10,7 @@
                 <li><router-link @click.native="closeMenu()" to="/api/guest_info">You is Here</router-link></li>
                 <li>
                     <router-link @click.native="closeMenu()" to="/chat" class="text-bold fg-yellow">
-                        <span :class="this.$route.path != '/chat' ? 'd-block ani-vertical' : 'd-block'">People Nearby</span>
+                        <span :class="this.$route.path != '/chat' ? 'd-block ani-vertical' : 'd-block'">Chat Nearby</span>
                     </router-link>
                 </li>
             </ul>
