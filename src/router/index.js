@@ -10,6 +10,7 @@ import Blog_detail from '@/modules/blog/Blog_detail.vue'
 import Profile from '@/modules/profile/Profile.vue'
 import Portfolio from '@/modules/portfolio/Portfolio.vue'
 import Chat from '@/modules/chat/Chat.vue'
+// import Chat from '@/modules/chat/Chat-firebase-bck.vue'
 
 import Guest from '@/modules/public_api/Guest.vue'
 import Calendar from '@/modules/public_api/Calendar.vue'
@@ -79,7 +80,7 @@ const router = new VueRouter({
         },
         {
             path: '/chat/:city_code',
-            name: 'Chat',
+            name: 'Chat_detail',
             component: Chat,
             props: true
         },

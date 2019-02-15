@@ -3,7 +3,7 @@
 
 		<h4>Chat</h4>
 		<hr>
-
+		
 		<div class="row">
 			<div class="cell-md-12">
 
@@ -29,11 +29,11 @@
 	                            </a>
 	                        </li>
 	                        
-							<div v-for="row in address" :key="row.name">
+							<div v-for="row in address" :key="row.id">
 								<li>
-									<router-link :to="'/chat/'+row.name">
+									<router-link :to="'/chat/'+getData(row.id, 'code')">
 										<span class="icon"><span class="mif-chevron-right"></span></span>
-										<span class="caption">{{ row.name }}</span>
+										<span class="caption">{{ getData(row.id, 'city') }}</span>
 									</router-link>
 								</li>
 							</div>
@@ -122,7 +122,7 @@
 										data-role="textarea">
 									</textarea>
 									<div class="button-group">
-										<button class="button large primary" style="min-height:68px;">
+										<button class="button large primary">
 				                        	<span class="mif-arrow-right"></span>
 				                        </button>
 									</div>
@@ -141,9 +141,8 @@
 </template>
 
 <script>
-
-	import { firestore } from '../../config/Firebase'
-	import datetime from '../../config/Date_helper'
+	
+	import { database } from '../../config/Firebase'
 	import Geohash from 'latlon-geohash'
 	import Axios from 'axios'
 
@@ -168,40 +167,9 @@
 		},
 
 		methods: {
-
 			login() {
-
 				if (this.username) {
-
-					let user = this.username
-
-					firestore.collection("users").where("username", "==", user).get()
-					.then(function(querySnapshot) {
-
-						// Update status user login
-						if (querySnapshot.docs.length > 0) {
-							querySnapshot.forEach(function(doc) {
-								
-								firestore.collection("users").doc(doc.id).update({ status: "online", last_login: datetime });
-								// console.log(doc.data());
-
-							});
-						}
-
-						// Register new user
-						else {
-							firestore.collection('users').add({
-								username: user,
-								created_at: datetime,
-								last_login: datetime,
-								status: 'online'
-							})
-						}
-					})
-					.catch(function(error) {
-						console.log("Error getting documents: ", error);
-					});
-
+					this.username = this.username
 					this.is_required = ''
 					this.is_login = true
 				}
@@ -212,22 +180,6 @@
 			},
 
 			logout() {
-
-				let user = this.username
-				
-				firestore.collection("users").where("username", "==", user).get()
-				.then(function(querySnapshot) {
-
-					// Update status user login
-					querySnapshot.forEach(function(doc) {
-						
-						firestore.collection("users").doc(doc.id).update({ status: "offline" });
-					});
-				})
-				.catch(function(error) {
-					console.log("Error getting documents: ", error);
-				});
-
 				this.username = ''
 				this.text_msg = ''
 				this.is_required = ''
@@ -242,21 +194,17 @@
 
 				if (this.text_msg) {
 
-					// Set room
-					firestore.collection('chat').doc(this.room).set({ name: this.room });
-
-					// Save chat
-					firestore.collection('chat').doc(this.room).collection('messages').add({
+					let message;
+					message = {
 						username: this.username,
-						text: this.text_msg,
-						created_at: datetime
-					})
-					.then(function (docRef) {
-						console.log('Document written with ID: ', docRef.id)
-					})
-					.catch(function (error) {
-						console.error('Error adding document: ', error)
-					})
+						text: this.text_msg
+					}
+
+					let key = this.room.push().key;
+					this.room.child('messages/' + key).set(message)
+
+					this.text_msg = ''
+					this.is_required = ''
 				}
 				else {
 					this.is_required = 'This field is required'
@@ -266,28 +214,25 @@
 			},
 
 			messageListener() {
-				let self = this
-				firestore.collection('chat').doc(this.room).collection('messages').get()
-				.then(function(querySnapshot) {
-					querySnapshot.forEach(function(doc) {
-						self.messages.push(doc.data());
-					});
-				}).catch(function(error) {
-					console.log("Error getting document:", error);
-				});
+				this.room.child('messages').on('child_added', (snapshot) => {
+					// push the snapshot value into a data attribute
+					this.messages.push(snapshot.val())
+				})
 			},
 
 			getCity() {
-
-				let self = this
-				firestore.collection("chat").get()
-				.then(function(querySnapshot) {
-					querySnapshot.forEach(function(doc) {
-						self.address.push(doc.data());
+				const itemsRef = database.ref('rooms');
+				itemsRef.on('value', snapshot => {
+					let data = snapshot.val();
+					let address = [];
+					Object.keys(data).forEach(key => {
+						address.push({
+							id: key,
+							username: data[key].username,
+							text: data[key].text
+						});
 					});
-				})
-				.catch(function(error) {
-					console.log("Error getting documents: ", error);
+					this.address = address;
 				});
 			},
 
@@ -304,18 +249,29 @@
 						var api = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' + position.coords.latitude + ',' + position.coords.longitude + '&key=AIzaSyBGRvIwip4B9lRqd14sEK5wVlvukKDhID0';
 						Axios.get(api)
 							.then(response => {
-								this.room = response.data.results[0].address_components[6].long_name
+								this.room = database.ref().child('rooms/' + geohash+'_'+response.data.results[0].address_components[6].long_name)
 								this.messageListener()
 							})
 
-					}, (error) => {
-						console.log("Connot detect position:", error);
+					}, (err) => {
+						
 					})
 				} 
 				else {
 					console.error('Cannot access geolocation')
 				}
 			},
+			
+			getData(str, type) {
+				var n = str.indexOf("_");
+				if (type == 'code') {
+					return str.substr(0, n);
+				}
+				else {
+					return str.replace(str.substr(0, n)+'_', '');
+				}
+			},
+
 		},
 
 		watch: {
