@@ -3,8 +3,6 @@
 
 		<h4>Chat</h4>
 		<hr>
-		
-		<button v-on:click="toggleSignIn">TEST LOGIN</button>
 
 		<div class="row">
 			<div class="cell-md-12">
@@ -31,11 +29,11 @@
 	                            </a>
 	                        </li>
 	                        
-							<div v-for="row in address" :key="row.id">
+							<div v-for="row in address" :key="row.name">
 								<li>
-									<router-link :to="'/chat/'+getData(row.id, 'code')">
+									<router-link :to="'/chat/'+row.name">
 										<span class="icon"><span class="mif-chevron-right"></span></span>
-										<span class="caption">{{ getData(row.id, 'city') }}</span>
+										<span class="caption">{{ row.name }}</span>
 									</router-link>
 								</li>
 							</div>
@@ -124,7 +122,7 @@
 										data-role="textarea">
 									</textarea>
 									<div class="button-group">
-										<button class="button large primary">
+										<button class="button large primary" style="min-height:68px;">
 				                        	<span class="mif-arrow-right"></span>
 				                        </button>
 									</div>
@@ -143,10 +141,8 @@
 </template>
 
 <script>
-	
-	import firebase from 'firebase'
 
-	import database from '../../config/Firebase'
+	import { firestore } from '../../config/Firebase'
 	import datetime from '../../config/Date_helper'
 	import Geohash from 'latlon-geohash'
 	import Axios from 'axios'
@@ -172,48 +168,40 @@
 		},
 
 		methods: {
-			toggleSignIn() {
-
-				// firebase.auth().onAuthStateChanged(function(user) {
-				// 	if (user) {
-				// 		// User is signed in.
-				// 		var isAnonymous = user.isAnonymous;
-				// 		var uid = user.uid;
-				// 		// ...
-				// 	} else {
-				// 		// User is signed out.
-				// 		// ...
-				// 	}
-					
-				// });
-
-				if (firebase.auth().currentUser) {
-					// [START signout]
-					firebase.auth().signOut();
-					// [END signout]
-				} 
-				else {
-					// [START authanon]
-					firebase.auth().signInAnonymously().catch(function(error) {
-						// Handle Errors here.
-						var errorCode = error.code;
-						var errorMessage = error.message;
-						// [START_EXCLUDE]
-						if (errorCode === 'auth/operation-not-allowed') {
-							alert('You must enable Anonymous auth in the Firebase Console.');
-						} 
-						else {
-							console.error(error);
-						}
-						// [END_EXCLUDE]
-					});
-					// [END authanon]
-				}
-			},
 
 			login() {
+
 				if (this.username) {
-					this.username = this.username
+
+					let user = this.username
+
+					firestore.collection("users").where("username", "==", user).get()
+					.then(function(querySnapshot) {
+
+						// Update status user login
+						if (querySnapshot.docs.length > 0) {
+							querySnapshot.forEach(function(doc) {
+								
+								firestore.collection("users").doc(doc.id).update({ status: "online", last_login: datetime });
+								// console.log(doc.data());
+
+							});
+						}
+
+						// Register new user
+						else {
+							firestore.collection('users').add({
+								username: user,
+								created_at: datetime,
+								last_login: datetime,
+								status: 'online'
+							})
+						}
+					})
+					.catch(function(error) {
+						console.log("Error getting documents: ", error);
+					});
+
 					this.is_required = ''
 					this.is_login = true
 				}
@@ -224,6 +212,22 @@
 			},
 
 			logout() {
+
+				let user = this.username
+				
+				firestore.collection("users").where("username", "==", user).get()
+				.then(function(querySnapshot) {
+
+					// Update status user login
+					querySnapshot.forEach(function(doc) {
+						
+						firestore.collection("users").doc(doc.id).update({ status: "offline" });
+					});
+				})
+				.catch(function(error) {
+					console.log("Error getting documents: ", error);
+				});
+
 				this.username = ''
 				this.text_msg = ''
 				this.is_required = ''
@@ -234,74 +238,56 @@
 				this.is_required = ''
 			},
 
-			sendMessage () {
+			sendMessage() {
 
-				// database.collection('chat').doc(this.room).set({
-				//     username: this.username,
-				// 	text: this.text_msg
-				// })
+				if (this.text_msg) {
 
-				database.collection('chat').doc(this.room).collection('messages').add({
-					username: this.username,
-					text: this.text_msg,
-					created_at: datetime
-				})
+					// Set room
+					firestore.collection('chat').doc(this.room).set({ name: this.room });
 
-				// database.collection('chat').add({
-				// 	username: this.username,
-				// 	text: this.text_msg
-				// })
-				.then(function (docRef) {
-					console.log('Document written with ID: ', docRef.id)
-				})
-				.catch(function (error) {
-					console.error('Error adding document: ', error)
-				})
+					// Save chat
+					firestore.collection('chat').doc(this.room).collection('messages').add({
+						username: this.username,
+						text: this.text_msg,
+						created_at: datetime
+					})
+					.then(function (docRef) {
+						console.log('Document written with ID: ', docRef.id)
+					})
+					.catch(function (error) {
+						console.error('Error adding document: ', error)
+					})
+				}
+				else {
+					this.is_required = 'This field is required'
+				}
+
+				this.$refs.text_msg.focus()
 			},
 
-			// sendMessage() {
-
-			// 	if (this.text_msg) {
-
-			// 		let message;
-			// 		message = {
-			// 			username: this.username,
-			// 			text: this.text_msg
-			// 		}
-
-			// 		let key = this.room.push().key;
-			// 		this.room.child('messages/' + key).set(message)
-
-			// 		this.text_msg = ''
-			// 		this.is_required = ''
-			// 	}
-			// 	else {
-			// 		this.is_required = 'This field is required'
-			// 	}
-
-			// 	this.$refs.text_msg.focus()
-			// },
-
 			messageListener() {
-				this.room.child('messages').on('child_added', (snapshot) => {
-					// push the snapshot value into a data attribute
-					this.messages.push(snapshot.val())
-				})
+				let self = this
+				firestore.collection('chat').doc(this.room).collection('messages').get()
+				.then(function(querySnapshot) {
+					querySnapshot.forEach(function(doc) {
+						self.messages.push(doc.data());
+					});
+				}).catch(function(error) {
+					console.log("Error getting document:", error);
+				});
 			},
 
 			getCity() {
-				const itemsRef = database.ref('rooms');
-				itemsRef.on('value', snapshot => {
-					let data = snapshot.val();
-					let address = [];
-					Object.keys(data).forEach(key => {
-						address.push({
-							id: key,
-							username: data[key].username,
-							text: data[key].text
-						});
+
+				let self = this
+				firestore.collection("chat").get()
+				.then(function(querySnapshot) {
+					querySnapshot.forEach(function(doc) {
+						self.address.push(doc.data());
 					});
-					this.address = address;
+				})
+				.catch(function(error) {
+					console.log("Error getting documents: ", error);
 				});
 			},
 
@@ -318,30 +304,18 @@
 						var api = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' + position.coords.latitude + ',' + position.coords.longitude + '&key=AIzaSyBGRvIwip4B9lRqd14sEK5wVlvukKDhID0';
 						Axios.get(api)
 							.then(response => {
-								// this.room = database.ref().child('rooms/' + geohash+'_'+response.data.results[0].address_components[6].long_name)
 								this.room = response.data.results[0].address_components[6].long_name
 								this.messageListener()
 							})
 
-					}, (err) => {
-						
+					}, (error) => {
+						console.log("Connot detect position:", error);
 					})
 				} 
 				else {
 					console.error('Cannot access geolocation')
 				}
 			},
-			
-			getData(str, type) {
-				var n = str.indexOf("_");
-				if (type == 'code') {
-					return str.substr(0, n);
-				}
-				else {
-					return str.replace(str.substr(0, n)+'_', '');
-				}
-			},
-
 		},
 
 		watch: {

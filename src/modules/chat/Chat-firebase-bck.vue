@@ -142,7 +142,7 @@
 
 <script>
 	
-	import database from '../../config/Firebase'
+	import { database } from '../../config/Firebase'
 	import Geohash from 'latlon-geohash'
 	import Axios from 'axios'
 
