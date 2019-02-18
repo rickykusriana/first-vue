@@ -19,6 +19,10 @@ export const database = firebase.database()
 // Cloud Firestore
 export const firestore = firebase.firestore()
 
+// Default timestamp
+export const datetime = firebase.firestore.FieldValue.serverTimestamp()
+
+
 
 
 
