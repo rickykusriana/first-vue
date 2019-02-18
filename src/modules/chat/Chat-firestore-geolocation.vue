@@ -1,7 +1,7 @@
 <template>
 	<main class="cell-md-10 cell-xl-10 order-1 pr-1-sx pl-1-sx pr-5-md pl-5-md">
 
-		<h4>Room : {{ room }}</h4>
+		<h4>Chat</h4>
 		<hr>
 
 		<div class="row">
@@ -12,44 +12,17 @@
 	                <nav class="navview-pane mt-2">
 	                    <button :class="is_login ? 'pull-button' : 'pull-button disabled'">
 							<span class="default-icon-menu"></span>
-						</button>						
+						</button>
+
+						<span class="caption" style="margin-left:20px;"><b>Create new Room</b></span>
 						
+						<li class="item-separator"></li>
+	                    <div class="suggest-box">
+	                        <input type="text" data-role="input" data-clear-button="false" data-search-button="true">
+	                    </div>
+
 	                    <ul class="navview-menu">
-							<li>
-	                            <a href="#">
-	                                <span class="caption" style="margin-left:-30px;"><b>Create new Room</b></span>
-	                            </a>
-	                        </li>
-							<div class="suggest-box">
-								<form @submit.prevent="createRoom">
-									<div class="input mb-1">
-										<input 
-											autocomplete="off" 
-											name="roomname"
-											ref="roomname"
-											v-model="roomname"
-											v-on:keydown="clear"
-											:class="is_required ? 'alert' : ''" 
-											type="text" 
-											data-role="input"
-											data-clear-button="false"
-											data-custom-buttons="customButtons"
-											data-role-input="true"
-											placeholder="Input room name">
-
-										<div class="button-group">
-											<button class="button primary">
-												<span class="mif-arrow-right"></span>
-											</button>
-										</div>
-									</div>
-									<small class="fg-red pl-4" v-if="is_required">{{ is_required }}</small>
-								</form>
-							</div>
-
-
-							<li class="item-separator"></li>
-							<li class="item-separator"></li>
+	                        <li class="item-separator"></li>
 	                        <li>
 	                            <a href="#">
 	                                <span class="caption" style="margin-left:-30px;"><b>Available Room</b></span>
@@ -57,17 +30,11 @@
 	                        </li>
 	                        
 							<div v-for="row in address" :key="row.name">
-								<li :class="room == row.name ? 'active' : ''">
-									<a href="#" v-on:click="changeRoom(row.name)">
+								<li>
+									<router-link :to="'/chat/'+row.name">
 										<span class="icon"><span class="mif-chevron-right"></span></span>
 										<span class="caption">{{ row.name }}</span>
-									</a>
-
-									<!-- <router-link :to="{ name: 'Chat_detail', params: { 'room_chat': row.name }}">
-										<span class="icon"><span class="mif-chevron-right"></span></span>
-										<span class="caption">{{ row.name }}</span>
-									</router-link> -->
-									
+									</router-link>
 								</li>
 							</div>
 
@@ -142,33 +109,25 @@
 									Hello, <b>{{username}}</b> 
 									<a href="#" class="float-right" v-on:click="logout">Logout</a>
 								</p>
-
-								<span v-if="!room">
-									<div class="example">Select room chat on the leftbar</div>
-								</span>
-
-								<span v-else>
-
-									<form class="textarea autosize" @submit.prevent="sendMessage">
-										<textarea 
-											autofocus 
-											name="text_msg"
-											ref="text_msg"
-											v-model="text_msg"
-											v-on:keydown="clear"
-											v-on:keyup.ctrl.enter="sendMessage"
-											:class="is_required ? 'alert' : ''"
-											placeholder="Input message here (Ctrl + Enter to send)"
-											data-role="textarea">
-										</textarea>
-										<div class="button-group">
-											<button class="button large primary" style="min-height:68px;">
-												<span class="mif-arrow-right"></span>
-											</button>
-										</div>
-									</form>
-									<small class="fg-red" v-if="is_required">{{ is_required }}</small>
-								</span>
+								<form class="textarea autosize" @submit.prevent="sendMessage">
+									<textarea 
+										autofocus 
+										name="text_msg"
+										ref="text_msg"
+										v-model="text_msg"
+										v-on:keydown="clear"
+										v-on:keyup.ctrl.enter="sendMessage"
+										:class="is_required ? 'alert' : ''"
+										placeholder="Input message here (Ctrl + Enter to send)"
+										data-role="textarea">
+									</textarea>
+									<div class="button-group">
+										<button class="button large primary" style="min-height:68px;">
+				                        	<span class="mif-arrow-right"></span>
+				                        </button>
+									</div>
+								</form>
+								<small class="fg-red" v-if="is_required">{{ is_required }}</small>
 
 							</div>
 						</div>
@@ -188,14 +147,11 @@
 	import Axios from 'axios'
 
 	export default {
-		
+
 		name: 'Chat',
-		// props: ['room_chat'],
 
 		data() {
 			return {
-				roomname: '',
-
 				username: '',
 				text_msg: '',
 
@@ -205,37 +161,12 @@
 				messages: [],
 
 				address: [],
-				room: '',
+				room: null,
 				precision: 6,
 			}
 		},
 
 		methods: {
-
-			changeRoom(new_room) {
-				this.messages = []
-				this.room = new_room;
-				this.messageListener(new_room)
-			},
-
-			createRoom() {
-				if (this.roomname) {
-					this.room = this.roomname
-
-					// Set room
-					firestore.collection('chat').doc(this.room).set({ 
-						name: this.room, 
-						created_by: this.username,
-						created_at: datetime
-					});
-
-					this.is_required = ''
-				}
-				else {
-					this.is_required = 'Room name is required'
-					this.$refs.roomname.focus()
-				}
-			},
 
 			login() {
 
@@ -300,11 +231,6 @@
 				this.text_msg = ''
 				this.is_required = ''
 				this.is_login = ''
-				this.room = ''
-				this.messages = []
-				
-				// this.$router.push({ name: 'Chat', path: '/chat' });
-
 			},
 
 			clear() {
@@ -314,6 +240,9 @@
 			sendMessage() {
 
 				if (this.text_msg) {
+
+					// Set room
+					firestore.collection('chat').doc(this.room).set({ name: this.room });
 
 					// Save chat
 					firestore.collection('chat').doc(this.room).collection('messages').add({
@@ -337,25 +266,19 @@
 				this.$refs.text_msg.focus()
 			},
 
-			messageListener(room) {
+			messageListener() {
 
-				if (room) {
-					this.messages = []
-					let ref = firestore.collection('chat').doc(room).collection('messages').orderBy('created_at', 'asc');
-					ref.onSnapshot(snapshot => {
-						snapshot.docChanges().forEach(change => {
-							if (change.type === 'added') {
-								let doc = change.doc;
-								this.messages.push(doc.data());
-							}
-						});
-					}, err => {
-						console.log(`Encountered error: ${err}`);
+				let ref = firestore.collection('chat').doc(this.room).collection('messages').orderBy('created_at', 'asc');
+				ref.onSnapshot(snapshot => {
+					snapshot.docChanges().forEach(change => {
+						if (change.type === 'added') {
+							let doc = change.doc;
+							this.messages.push(doc.data());
+						}
 					});
-				}
-				else {
-					console.log('Room not assign');
-				}
+				}, err => {
+					console.log(`Encountered error: ${err}`);
+				});
 			},
 
 			getCity() {
@@ -406,8 +329,7 @@
 
 			is_login(new_login) {
 				localStorage.is_login = new_login;
-			},
-      
+			}
 		},
 
 		mounted() {
@@ -419,6 +341,7 @@
 				this.is_login = localStorage.is_login;
 			}
 
+			this.init()
 			this.getCity()
 		},
 
