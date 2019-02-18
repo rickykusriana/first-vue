@@ -58,10 +58,16 @@
 	                        
 							<div v-for="row in address" :key="row.name">
 								<li :class="room == row.name ? 'active' : ''">
-									<router-link :to="{ name: 'Chat_detail', params: { 'room_chat': row.name }}">
+									<a href="#" v-on:click="changeRoom(row.name)">
 										<span class="icon"><span class="mif-chevron-right"></span></span>
 										<span class="caption">{{ row.name }}</span>
-									</router-link>
+									</a>
+
+									<!-- <router-link :to="{ name: 'Chat_detail', params: { 'room_chat': row.name }}">
+										<span class="icon"><span class="mif-chevron-right"></span></span>
+										<span class="caption">{{ row.name }}</span>
+									</router-link> -->
+									
 								</li>
 							</div>
 
@@ -184,7 +190,7 @@
 	export default {
 		
 		name: 'Chat',
-		props: ['room_chat'],
+		// props: ['room_chat'],
 
 		data() {
 			return {
@@ -205,6 +211,12 @@
 		},
 
 		methods: {
+
+			changeRoom(new_room) {
+				this.messages = []
+				this.room = new_room;
+				this.messageListener(new_room)
+			},
 
 			createRoom() {
 				if (this.roomname) {
@@ -291,7 +303,7 @@
 				this.room = ''
 				this.messages = []
 				
-				this.$router.push({ name: 'Chat', path: '/chat' });
+				// this.$router.push({ name: 'Chat', path: '/chat' });
 
 			},
 
@@ -328,6 +340,7 @@
 			messageListener(room) {
 
 				if (room) {
+					this.messages = []
 					let ref = firestore.collection('chat').doc(room).collection('messages').orderBy('created_at', 'asc');
 					ref.onSnapshot(snapshot => {
 						snapshot.docChanges().forEach(change => {
@@ -394,13 +407,6 @@
 			is_login(new_login) {
 				localStorage.is_login = new_login;
 			},
-
-			room_chat: function(new_room, oldVal) {
-				console.log('Prop changed: ', new_room, ' | was: ', oldVal)
-				// localStorage.room = new_room;
-				this.room = new_room;
-				this.messageListener(new_room)
-			}
       
 		},
 
@@ -412,11 +418,6 @@
 			if (localStorage.is_login) {
 				this.is_login = localStorage.is_login;
 			}
-
-			// if (localStorage.room) {
-			// 	this.room = localStorage.room;
-			// 	this.messageListener(this.room)
-			// }
 
 			this.getCity()
 		},
