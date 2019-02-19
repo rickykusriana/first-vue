@@ -58,7 +58,7 @@
 	                        
 							<div v-for="row in address" :key="row.name">
 								<li :class="room == row.name ? 'active' : ''">
-									<a href="#" v-on:click="changeRoom(row.name)">
+									<a href="#" v-on:click="changeRoom(row.name, $event)">
 										<span class="icon"><span class="mif-chevron-right"></span></span>
 										<span class="caption">{{ row.name }}</span>
 									</a>
@@ -184,7 +184,6 @@
 <script>
 
 	import { firestore, datetime } from '../../config/Firebase'
-	import Geohash from 'latlon-geohash'
 	import Axios from 'axios'
 
 	export default {
@@ -213,9 +212,7 @@
 		methods: {
 
 			changeRoom(new_room) {
-				this.messages = []
-				this.room = new_room;
-				this.messageListener(new_room)
+				this.room = new_room
 			},
 
 			createRoom() {
@@ -312,18 +309,21 @@
 			},
 
 			sendMessage() {
-
+				var self = this;
 				if (this.text_msg) {
 
+					let data = {
+						'username': this.username,
+						'text': this.text_msg,
+						'created_at': datetime
+					}
+
 					// Save chat
-					firestore.collection('chat').doc(this.room).collection('messages').add({
-						username: this.username,
-						text: this.text_msg,
-						created_at: datetime
+					firestore.collection('chat').doc(this.room).collection('messages').add(data)
+					.then(function (docRef) {
+						self.messages.push(data)
+						console.log('Document written with ID: ', docRef.id)
 					})
-					// .then(function (docRef) {
-					// 	console.log('Document written with ID: ', docRef.id)
-					// })
 					.catch(function (error) {
 						console.error('Error adding document: ', error)
 					})
@@ -340,18 +340,27 @@
 			messageListener(room) {
 
 				if (room) {
-					this.messages = []
-					let ref = firestore.collection('chat').doc(room).collection('messages').orderBy('created_at', 'asc');
-					ref.onSnapshot(snapshot => {
-						snapshot.docChanges().forEach(change => {
-							if (change.type === 'added') {
-								let doc = change.doc;
-								this.messages.push(doc.data());
+					firestore.collection('chat').doc(room).collection('messages').orderBy('created_at', 'asc').get()
+					.then((querySnapshot) => {
+						querySnapshot.forEach((doc) => {
+							let data = {
+								'username': doc.data().username,
+								'text': doc.data().text
 							}
-						});
-					}, err => {
-						console.log(`Encountered error: ${err}`);
+							this.messages.push(data)
+						})
 					});
+
+					// ref.onSnapshot(snapshot => {
+					// 	snapshot.docChanges().forEach(change => {
+					// 		if (change.type === "added") {
+					// 			let doc = change.doc;
+					// 			this.messages.push(doc.data());
+					// 		}
+					// 	});
+					// }, err => {
+					// 	console.log(`Encountered error: ${err}`);
+					// });
 				}
 				else {
 					console.log('Room not assign');
@@ -372,31 +381,6 @@
 				});
 			},
 
-			// 
-
-			init() {
-				if (navigator.geolocation) {
-					navigator.geolocation.getCurrentPosition((position) => {
-						
-						// For get code location 
-						var geohash = Geohash.encode(position.coords.latitude, position.coords.longitude, this.precision);
-
-						// API, for get city name location
-						var api = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' + position.coords.latitude + ',' + position.coords.longitude + '&key=AIzaSyBGRvIwip4B9lRqd14sEK5wVlvukKDhID0';
-						Axios.get(api)
-							.then(response => {
-								this.room = response.data.results[0].address_components[6].long_name
-								this.messageListener()
-							})
-
-					}, (error) => {
-						console.log("Connot detect position:", error);
-					})
-				} 
-				else {
-					console.error('Cannot access geolocation')
-				}
-			},
 		},
 
 		watch: {
@@ -407,6 +391,10 @@
 			is_login(new_login) {
 				localStorage.is_login = new_login;
 			},
+			
+			room: function(new_room) {
+				this.messageListener(new_room)
+			}
       
 		},
 
