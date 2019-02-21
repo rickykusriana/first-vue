@@ -47,7 +47,6 @@
 								</form>
 							</div>
 
-
 							<li class="item-separator"></li>
 							<li class="item-separator"></li>
 	                        <li>
@@ -61,13 +60,7 @@
 									<a href="#" v-on:click="changeRoom(row.name, $event)">
 										<span class="icon"><span class="mif-chevron-right"></span></span>
 										<span class="caption">{{ row.name }}</span>
-									</a>
-
-									<!-- <router-link :to="{ name: 'Chat_detail', params: { 'room_chat': row.name }}">
-										<span class="icon"><span class="mif-chevron-right"></span></span>
-										<span class="caption">{{ row.name }}</span>
-									</router-link> -->
-									
+									</a>									
 								</li>
 							</div>
 
@@ -96,7 +89,7 @@
 										data-clear-button="false"
 										data-custom-buttons="customButtons"
 										data-role-input="true"
-										placeholder="Input your name here">
+										placeholder="Input your username">
 
 									<div class="button-group">
 										<button class="button primary">
@@ -110,6 +103,7 @@
 
 						<div v-else>
 							<div>
+
 								<keep-alive>
 									<div 
 										class="messages" 
@@ -118,6 +112,16 @@
 										data-height="432"
 										v-keep-scroll-position
 										v-chat-scroll="{always: true, smooth: false}">
+
+										<div class="split-button" style="position:fixed;z-index:9999999">
+											<button class="split dropdown-toggle"></button>
+											<ul class="d-menu" data-role="dropdown">
+												<li><a href="#">Reply All</a></li>
+												<li><a href="#">Forward</a></li>
+												<li class="divider"></li>
+												<li><a href="#">Delete</a></li>
+											</ul>
+										</div>
 										
 										<div class="message" v-for="row in messages" :key="row.key">
 
@@ -167,7 +171,7 @@
 											</button>
 										</div>
 									</form>
-									<small class="fg-red" v-if="is_required">{{ is_required }}</small>
+									<small class="fg-red" v-if="is_required_msg">{{ is_required_msg }}</small>
 								</span>
 
 							</div>
@@ -189,7 +193,6 @@
 	export default {
 		
 		name: 'Chat',
-		// props: ['room_chat'],
 
 		data() {
 			return {
@@ -199,6 +202,7 @@
 				text_msg: '',
 
 				is_required: '',
+				is_required_msg: '',
 				is_login: '',
 
 				messages: [],
@@ -293,9 +297,9 @@
 					console.log("Error getting documents: ", error);
 				});
 
+				this.clear()
 				this.username = ''
 				this.text_msg = ''
-				this.is_required = ''
 				this.is_login = ''
 				this.room = ''
 				this.messages = []
@@ -306,6 +310,7 @@
 
 			clear() {
 				this.is_required = ''
+				this.is_required_msg = ''
 			},
 
 			sendMessage() {
@@ -322,22 +327,25 @@
 					firestore.collection('chat').doc(this.room).collection('messages').add(data)
 					.then(function (docRef) {
 						self.messages.push(data)
-						console.log('Document written with ID: ', docRef.id)
+						// console.log('Document written with ID: ', docRef.id)
+
+						self.text_msg = ''
+						self.is_required_msg = ''
 					})
 					.catch(function (error) {
 						console.error('Error adding document: ', error)
 					})
 				}
 				else {
-					this.is_required = 'This field is required'
+					self.is_required_msg = 'This field is required'
 				}
 
-				this.text_msg = ''
-				this.is_required = ''
 				this.$refs.text_msg.focus()
 			},
 
 			messageListener(room) {
+
+				this.messages = []
 
 				if (room) {
 					firestore.collection('chat').doc(room).collection('messages').orderBy('created_at', 'asc').get()
@@ -350,17 +358,6 @@
 							this.messages.push(data)
 						})
 					});
-
-					// ref.onSnapshot(snapshot => {
-					// 	snapshot.docChanges().forEach(change => {
-					// 		if (change.type === "added") {
-					// 			let doc = change.doc;
-					// 			this.messages.push(doc.data());
-					// 		}
-					// 	});
-					// }, err => {
-					// 	console.log(`Encountered error: ${err}`);
-					// });
 				}
 				else {
 					console.log('Room not assign');
