@@ -8,6 +8,7 @@ import Home from '@/modules/home/Home.vue'
 import Blog from '@/modules/blog/Blog.vue'
 import Blog_detail from '@/modules/blog/Blog_detail.vue'
 import Profile from '@/modules/profile/Profile.vue'
+import Location from '@/modules/profile/Location.vue'
 import Portfolio from '@/modules/portfolio/Portfolio.vue'
 import Chat from '@/modules/chat/Chat.vue'
 // import Chat from '@/modules/chat/Chat-firebase-bck.vue'
@@ -71,6 +72,11 @@ const router = new VueRouter({
             name: 'Profile',
             component: Profile
         },
+        {
+            path: '/location',
+            name: 'Location',
+            component: Location
+        },
 
         // Chat
         {
@@ -78,12 +84,6 @@ const router = new VueRouter({
             name: 'Chat',
             component: Chat
         },
-        // {
-        //     path: '/chat/:room_chat',
-        //     name: 'Chat_detail',
-        //     component: Chat,
-        //     props: true
-        // },
 
         {
             path: '/api/guest_info',
