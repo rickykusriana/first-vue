@@ -35,32 +35,39 @@
 
 		props: ['id'],
 
-		methods: {
-			getText(html) {
-				var tmp = document.createElement('div');
-				tmp.innerHTML = html;
-				return tmp.textContent.substr(3, 100) || tmp.innerText.substr(3, 100);
-			},
-			getPostID() {
-				return this.id;
-			}
-		},
-
 		data() {
 			return {
 				posts: []
 			}
 		},
-		created() {
-			// var api = 'http://localhost/masterapp/api/post/blog?id='+this.getPostID()+'&X-API-KEY=SeVf4BIX2R8KmZaE7JwoD1CgUkz6OLyQpMdTtG0r';
-			// var api = 'http://kodokode.com/api/post/blog?id='+this.getPostID()+'&X-API-KEY=SeVf4BIX2R8KmZaE7JwoD1CgUkz6OLyQpMdTtG0r';
 
-			var api = 'https://www.googleapis.com/blogger/v3/blogs/9128430119229959313/posts/'+this.getPostID()+'?key=AIzaSyBntE0pCcddmdpOkEfjg0bbw1kHSZ1Q5is';
+		watch: {
+
+			id: function(post_id) {
+
+				this.posts = []
+
+				var api = 'https://www.googleapis.com/blogger/v3/blogs/9128430119229959313/posts/'+post_id+'?key=AIzaSyBntE0pCcddmdpOkEfjg0bbw1kHSZ1Q5is';
 			
-			Axios.get(api)
+				Axios.get(api)
 				.then(response => {
 					this.posts = response.data
 				})
+				
+				window.scrollTo({ top: 0 });
+			}
+		},
+
+		mounted() {
+			// var api = 'http://localhost/masterapp/api/post/blog?id='+this.getPostID()+'&X-API-KEY=SeVf4BIX2R8KmZaE7JwoD1CgUkz6OLyQpMdTtG0r';
+			// var api = 'http://kodokode.com/api/post/blog?id='+this.getPostID()+'&X-API-KEY=SeVf4BIX2R8KmZaE7JwoD1CgUkz6OLyQpMdTtG0r';
+
+			var api = 'https://www.googleapis.com/blogger/v3/blogs/9128430119229959313/posts/'+this.id+'?key=AIzaSyBntE0pCcddmdpOkEfjg0bbw1kHSZ1Q5is';
+			
+			Axios.get(api)
+			.then(response => {
+				this.posts = response.data
+			})
 		}
 	}
 

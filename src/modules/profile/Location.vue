@@ -5,20 +5,13 @@
 		<div class="row">
 			<div class="cell-md-12">
 
-                <pre>{{ json }}</pre>
-
 				<div class="row mt-2 p-0 m-0">
-					<table class="table cell-border table-border options-table">
-		                <thead>
-			                <tr>
-			                    <th>Name</th>
-			                    <th>Value</th>
-			                </tr>
-		                </thead>
-		                <tbody>
-			                
-		                </tbody>
-		            </table>
+
+					<vue-json-pretty
+						class="example cell-12"
+						:path="'res'"
+						:data="{ json }">
+					</vue-json-pretty>
 
 		        </div>
 		    </div>
@@ -29,11 +22,12 @@
 
 <script>
 
+	import VueJsonPretty from 'vue-json-pretty'
     import Geohash from 'latlon-geohash'
 	import Axios from 'axios'
 	
 	export default {
-
+		
 		data() {
 			return {
 				json: [],
@@ -50,14 +44,15 @@
                     var api = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' + position.coords.latitude + ',' + position.coords.longitude + '&key=AIzaSyBGRvIwip4B9lRqd14sEK5wVlvukKDhID0';
                     Axios.get(api)
                         .then(response => {
-                            // this.json = response.data.results[0].address_components[6].long_name
+							
                             this.json = {
-                                'street': response.data.results[0].address_components[1].long_name,
+								'street': response.data.results[0].address_components[1].long_name,
+								'city': response.data.results[0].address_components[6].long_name,
                                 'formatted_address': response.data.results[0].formatted_address,
                                 'geometry': response.data.results[0].geometry.location
-                            }
+							}
 
-                            console.log(response.data.results[0])
+                            // console.log(response.data.results[0])
                         })
 
                 }, (error) => {
@@ -67,7 +62,10 @@
             else {
                 Metro.toast.create('Cannot access geolocation', null, 5000)
             }
-		}
+		},
+		components: {
+			VueJsonPretty
+		},
 	}
 
 </script>

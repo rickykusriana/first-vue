@@ -10,6 +10,7 @@
 				</span>
 				<p>{{ profile.bio }}</p>
 
+				<p>Stay connected with :</p>
 				<div class="example text-center">
 					<span v-for="row of profile.link_profile" :key="row.id">
 						<a target="_blank" :href="row.app_url" :class="'button '+row.app_color+' outline cell-md-2 cell-xs-12'">
@@ -34,7 +35,7 @@
 			}
 		},
 		created() {
-			var api = 'https://kodokode-1540384975077.firebaseio.com/profile/rickykusriana.json';
+			var api = 'https://first-158002.firebaseio.com/profile/rickykusriana.json';
 			Axios.get(api)
 				.then(response => {
 					this.profile = response.data

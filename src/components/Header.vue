@@ -7,7 +7,7 @@
                 <li><router-link @click.native="closeMenu()" to="/profile">About Me</router-link></li>
                 <li><router-link @click.native="closeMenu()" to="/portfolio">Portfolio</router-link></li>
                 <li><router-link @click.native="closeMenu()" to="/blog">Blog</router-link></li>
-                <li><router-link @click.native="closeMenu()" to="/api/guest_info">You is Here</router-link></li>
+                <li><router-link @click.native="closeMenu()" to="/location">You is Here</router-link></li>
                 <li>
                     <router-link @click.native="closeMenu()" to="/chat" class="text-bold fg-yellow">
                         <span :class="this.$route.path != '/chat' ? 'd-block ani-vertical' : 'd-block'">Public Chat</span>

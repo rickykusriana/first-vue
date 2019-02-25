@@ -9,7 +9,7 @@
 
 				<div data-role="navview" data-compact="md" data-expanded="lg" data-toggle="#pane-toggle">
 
-	                <nav class="navview-pane mt-2">
+	                <nav id="navview" class="navview-pane mt-2">
 	                    <button :class="is_login ? 'pull-button' : 'pull-button disabled'">
 							<span class="default-icon-menu"></span>
 						</button>						
@@ -60,6 +60,7 @@
 									<a href="#" v-on:click="changeRoom(row.name, $event)">
 										<span class="icon"><span class="mif-chevron-right"></span></span>
 										<span class="caption">{{ row.name }}</span>
+										<!-- <small style="right:20px; position:absolute;" class="text-bold fg-red">{{ count_chat.count }}</small> -->
 									</a>									
 								</li>
 							</div>
@@ -233,6 +234,7 @@
 			changeRoom(new_room) {
 				this.room = new_room
 				Metro.toast.create('Join to '+new_room, null, 3000)
+				document.getElementById('navview').classList.remove('open');
 			},
 
 			createRoom() {
@@ -377,13 +379,14 @@
 				this.$refs.text_msg.focus()
 			},
 
-			messageListener() {
+			messageListener(room_name) {
 				
 				let data = []
-				this.messages = []
-
 				let self = this
+				
 				if (this.room) {
+					
+					self.messages = []
 
 					// Load messages
 					firestore.collection("chat").doc(this.room).collection("messages").orderBy("created_at", "asc")
@@ -392,6 +395,10 @@
 						snapshot.docChanges().forEach(function(change) {
 							if (change.type === "added") {
 								data.push(change.doc.data())
+
+								if (change.doc.data().username != self.username && self.messages.length > 0) {
+									Metro.toast.create('New message from '+change.doc.data().username+' in '+room_name, null, 3000)
+								}
 							}
 						});
 
@@ -456,7 +463,7 @@
 			},
 			
 			room: function(new_room) {
-				this.messageListener()
+				this.messageListener(new_room)
 			}
       
 		},
