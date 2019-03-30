@@ -1,4 +1,5 @@
-import firebase from 'firebase/app'
+import fb from 'firebase/app'
+import 'firebase/auth'
 import 'firebase/database'
 import 'firebase/firestore'
 
@@ -11,16 +12,19 @@ let config = {
 	messagingSenderId: "541585712871"
 }
 
-firebase.initializeApp(config);
+fb.initializeApp(config);
+
+// Export auth
+export const firebase = fb;
 
 // Realtime Database
-export const database = firebase.database()
+export const database = fb.database()
 
 // Cloud Firestore
-export const firestore = firebase.firestore()
+export const firestore = fb.firestore()
 
 // Default timestamp
-export const datetime = firebase.firestore.FieldValue.serverTimestamp()
+export const datetime = fb.firestore.FieldValue.serverTimestamp()
 
 
 

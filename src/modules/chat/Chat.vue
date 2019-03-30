@@ -7,195 +7,183 @@
 		<div class="row">
 			<div class="cell-md-12">
 
-				<div data-role="navview" data-compact="md" data-expanded="lg" data-toggle="#pane-toggle">
+                <!-- Login form -->
+                <div v-if="!is_login" class="pt-10">
+                    <center>
+                    <button data-role="ripple" class="button block primary" @click="loginAnon()">
+                        <span class="mif-enter pr-2"></span> Sign In
+                    </button>
+                    </center>
+                </div>
 
-	                <nav id="navview" class="navview-pane mt-2">
-	                    <button :class="is_login ? 'pull-button' : 'pull-button disabled'">
-							<span class="default-icon-menu"></span>
-						</button>						
-						
-	                    <ul class="navview-menu">
-							<li>
-	                            <a href="#">
-	                                <span class="caption" style="margin-left:-30px;"><b>Create new Room</b></span>
-	                            </a>
-	                        </li>
-							<div class="suggest-box">
-								<form @submit.prevent="createRoom">
-									<div class="input mb-1">
-										<input 
-											autocomplete="off" 
-											name="room_name"
-											ref="room_name"
-											v-model="room_name"
-											v-on:keydown="clear"
-											:class="is_required ? 'alert' : ''" 
-											type="text" 
-											data-role="input"
-											data-clear-button="false"
-											data-custom-buttons="customButtons"
-											data-role-input="true"
-											placeholder="Input room name">
+                <div v-else>
 
-										<div class="button-group">
-											<button class="button primary">
-												<span class="mif-arrow-right"></span>
-											</button>
-										</div>
-									</div>
-									<small class="fg-red pl-4" v-if="is_required">{{ is_required }}</small>
-								</form>
-							</div>
+                    <div data-role="navview" data-compact="md" data-expanded="lg" data-toggle="#pane-toggle">
 
-							<li class="item-separator"></li>
-							<li class="item-separator"></li>
-	                        <li>
-	                            <a href="#">
-	                                <span class="caption" style="margin-left:-30px;"><b>Available Room</b></span>
-	                            </a>
-	                        </li>
-	                        
-							<div v-for="row in address" :key="row.name">
-								<li :class="room == row.name ? 'active' : ''">
-									<a href="#" v-on:click="changeRoom(row.name, $event)">
-										<span class="icon"><span class="mif-chevron-right"></span></span>
-										<span class="caption">{{ row.name }}</span>
-										<!-- <small style="right:20px; position:absolute;" class="text-bold fg-red">{{ count_chat.count }}</small> -->
-									</a>									
-								</li>
-							</div>
+                        <!-- Sidebar Room Chat -->
+                        <nav v-if="is_login" id="navview" class="navview-pane mt-2">
+                            <button :class="is_login ? 'pull-button' : 'pull-button disabled'">
+                                <span class="default-icon-menu"></span>
+                            </button>						
+                            
+                            <ul class="navview-menu">
+                                <li>
+                                    <a href="#">
+                                        <span class="caption" style="margin-left:-30px;"><b>Create new Room</b></span>
+                                    </a>
+                                </li>
+                                <div class="suggest-box">
+                                    <form @submit.prevent="createRoom">
+                                        <div class="input mb-1">
+                                            <input 
+                                                autocomplete="off" 
+                                                name="room_name"
+                                                ref="room_name"
+                                                v-model="room_name"
+                                                v-on:keydown="clear"
+                                                :class="is_required ? 'alert' : ''" 
+                                                type="text" 
+                                                data-role="input"
+                                                data-clear-button="false"
+                                                data-custom-buttons="customButtons"
+                                                data-role-input="true"
+                                                placeholder="Input room name">
 
-	                    </ul>
-	                </nav>
+                                            <div class="button-group">
+                                                <button data-role="ripple" class="button primary">
+                                                    <span class="mif-arrow-right"></span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <small class="fg-red pl-4" v-if="is_required">{{ is_required }}</small>
+                                    </form>
+                                </div>
 
-	                <div class="navview-content pl-4-md pt-1">
+                                <li class="item-separator"></li>
+                                <li class="item-separator"></li>
+                                <li>
+                                    <a href="#">
+                                        <span class="caption" style="margin-left:-30px;"><b>Available Room</b></span>
+                                    </a>
+                                </li>
+                                
+                                <div v-for="row in address" :key="row.name">
+                                    <li :class="room == row.name ? 'active' : ''">
+                                        <a href="#" v-on:click="changeRoom(row.name, $event)">
+                                            <span class="icon"><span class="mif-chevron-right"></span></span>
+                                            <span class="caption">{{ row.name }}</span>
+                                            <!-- <small style="right:20px; position:absolute;" class="text-bold fg-red">{{ count_chat.count }}</small> -->
+                                        </a>									
+                                    </li>
+                                </div>
 
-	                    <div class="pb-1">
-	                        <button id="pane-toggle" class="button square d-none-md"><span class="default-icon-menu"></span></button>
-	                    </div>
+                            </ul>
+                        </nav>
 
-						<div v-if="!is_login">
-							<form @submit.prevent="login">
-								<div class="input mb-1 cell-md-4">
-									<input 
-										autofocus
-										autocomplete="off" 
-										name="username"
-										ref="username"
-										v-model="username"
-										v-on:keydown="clear"
-										:class="is_required ? 'alert' : ''" 
-										type="text" 
-										data-role="input"
-										data-clear-button="false"
-										data-custom-buttons="customButtons"
-										data-role-input="true"
-										placeholder="Input your username">
+                        <!-- Main Content -->
+                        <div class="navview-content pl-4-md pt-1">
 
-									<div class="button-group">
-										<button class="button primary">
-				                        	<span class="mif-arrow-right"></span>
-				                        </button>
-									</div>
-								</div>
-								<small class="fg-red" v-if="is_required">{{ is_required }}</small>
-							</form>
-						</div>
+                            <div class="pb-1">
+                                <button id="pane-toggle" class="button square d-none-md"><span class="default-icon-menu"></span></button>
+                            </div>
 
-						<div v-else>
-							<div>
-								
-								<!-- Dilaog delete room -->
-								<div class="dialog" data-role="dialog" id="demoDialog1">
-									<div class="dialog-title">Confirmation</div>
-									<div class="dialog-content">
-										Are you sure to delete this room?
-									</div>
-									<div class="dialog-actions">
-										<button class="button js-dialog-close">No</button>
-										<button v-on:click="deleteRoom(room)" class="button success js-dialog-close">Yes</button>
-									</div>
-								</div>
+                            <!-- Chat form -->
+                            
+                            <div>
+                                
+                                <!-- Dilaog delete room -->
+                                <div class="dialog" data-role="dialog" id="demoDialog1">
+                                    <div class="dialog-title">Confirmation</div>
+                                    <div class="dialog-content">
+                                        Are you sure to delete this room?
+                                    </div>
+                                    <div class="dialog-actions">
+                                        <button data-role="ripple" class="button js-dialog-close">No</button>
+                                        <button v-on:click="deleteRoom(room)" class="button success js-dialog-close">Yes</button>
+                                    </div>
+                                </div>
 
-								<div class="panel mx-auto">
-									<div class="panel-title">
-										<span class="caption">Room Name : <b>{{ room }}</b></span>
-										<span 
-											v-if="room_owner"
-											onclick="Metro.dialog.open('#demoDialog1')"
-											class="mif-cross icon fg-red"
-											title="Delete Room"
-											style="cursor:pointer; float: right;position: absolute;right: 0;">
-										</span>
-									</div>
-								</div>
+                                <div class="panel mx-auto">
+                                    <div class="panel-title">
+                                        <span class="caption">Room Name : <b>{{ room }}</b></span>
+                                        <span 
+                                            v-if="room_owner"
+                                            onclick="Metro.dialog.open('#demoDialog1')"
+                                            class="mif-cross icon fg-red"
+                                            title="Delete Room"
+                                            style="cursor:pointer; float: right;position: absolute;right: 0;">
+                                        </span>
+                                    </div>
+                                </div>
 
-								<keep-alive>
-									
-									<div 
-										class="messages panel" 
-										ref="div_messages"
-										data-role="panel"
-										data-height="432"
-										v-keep-scroll-position
-										v-chat-scroll="{always: true, smooth: false}">
+                                <keep-alive>
+                                    
+                                    <div 
+                                        class="messages panel" 
+                                        ref="div_messages"
+                                        data-role="panel"
+                                        data-height="432"
+                                        v-keep-scroll-position
+                                        v-chat-scroll="{always: true, smooth: false}">
 
-										<div class="message" v-for="(row, key) in messages[0]" :key="key">
+                                        <div class="message" v-for="(row, key) in messages[0]" :key="key">
 
-											<div class="d-flex flex-row-r p-1" v-if="username == row.username">
-												<div class="p-2 bg-lightGreen">
-													{{ row.text }}
-												</div>
-											</div>
+                                            <div class="d-flex flex-row-r p-1" v-if="username == row.username">
+                                                <div class="p-2 bg-lightGreen">
+                                                    {{ row.text }}
+                                                </div>
+                                            </div>
 
-											<div class="d-flex flex-row p-1" v-else>
-												<div class="p-2 bg-lightGray">
-													<strong>{{ row.username }}</strong><br>
-													{{ row.text }}
-												</div>
-											</div>
+                                            <div class="d-flex flex-row p-1" v-else>
+                                                <div class="p-2 bg-lightGray">
+                                                    <strong>{{ row.username }}</strong><br>
+                                                    {{ row.text }}
+                                                </div>
+                                            </div>
 
-										</div>
-									</div>
-								</keep-alive>
+                                        </div>
+                                    </div>
+                                </keep-alive>
 
-								<p class="pt-2 pb-2">
-									Hello, <b>{{username}}</b> 
-									<a href="#" class="float-right" v-on:click="logout">Logout</a>
-								</p>
+                                <p class="pt-2 pb-2">
+                                    Hello, <b>{{username}}</b> 
+                                    <!-- <a href="#" class="float-right" v-on:click="logout">Logout</a> -->
+                                    <a href="#" class="float-right" v-on:click="logoutAnon">Logout</a>
+                                </p>
 
-								<span v-if="!room">
-									<div class="example">Select room chat on the leftbar</div>
-								</span>
+                                <span v-if="!room">
+                                    <div class="example">Select room chat on the leftbar</div>
+                                </span>
 
-								<span v-else>
+                                <span v-else>
 
-									<form class="textarea autosize" @submit.prevent="sendMessage">
-										<textarea 
-											autofocus 
-											name="text_msg"
-											ref="text_msg"
-											v-model="text_msg"
-											v-on:keydown="clear"
-											v-on:keyup.ctrl.enter="sendMessage"
-											:class="is_required ? 'alert' : ''"
-											placeholder="Input message here (Ctrl + Enter to send)"
-											data-role="textarea">
-										</textarea>
-										<div class="button-group">
-											<button class="button large primary" style="min-height:68px;">
-												<span class="mif-arrow-right"></span>
-											</button>
-										</div>
-									</form>
-									<small class="fg-red" v-if="is_required_msg">{{ is_required_msg }}</small>
-								</span>
+                                    <form class="textarea autosize" @submit.prevent="sendMessage">
+                                        <textarea 
+                                            autofocus 
+                                            name="text_msg"
+                                            ref="text_msg"
+                                            v-model="text_msg"
+                                            v-on:keydown="clear"
+                                            v-on:keyup.ctrl.enter="sendMessage"
+                                            :class="is_required ? 'alert' : ''"
+                                            placeholder="Input message here (Ctrl + Enter to send)"
+                                            data-role="textarea">
+                                        </textarea>
+                                        <div class="button-group">
+                                            <button data-role="ripple" class="button large primary" style="min-height:68px;">
+                                                <span class="mif-arrow-right"></span>
+                                            </button>
+                                        </div>
+                                    </form>
+                                    <small class="fg-red" v-if="is_required_msg">{{ is_required_msg }}</small>
+                                </span>
 
-							</div>
-						</div>
-						
-	                </div>
-	            </div>
+                            </div>              
+                            
+                        </div>
+                    </div>
+
+                </div>
 
             </div>
 		</div>
@@ -204,7 +192,8 @@
 
 <script>
 
-	import { firestore, datetime } from '../../config/Firebase'
+	import { firebase, firestore, datetime } from '../../config/Firebase'
+	import { nama_hewan, kata_sifat } from '../../config/String_helper'
 	import Axios from 'axios'
 
 	export default {
@@ -226,6 +215,9 @@
 
 				messages: [],
 				address: [],
+
+				animal_name: '',
+				data_client: []
 			}
 		},
 
@@ -233,7 +225,7 @@
 
 			changeRoom(new_room) {
 				this.room = new_room
-				Metro.toast.create('Join to '+new_room, null, 3000)
+				Metro.toast.create('Join to '+new_room, null, 5000)
 				document.getElementById('navview').classList.remove('open');
 			},
 
@@ -248,7 +240,7 @@
 						created_at: datetime
 					});
 
-					Metro.toast.create('Room created', null, 3000)
+					Metro.toast.create('Room created', null, 5000)
 					this.is_required = ''
 					this.room_name = ''
 				}
@@ -322,6 +314,60 @@
 					this.is_required = 'You must enter name to join'
 					this.$refs.username.focus()
 				}
+            },
+            
+            loginAnon() {
+				
+                firebase.auth().signInAnonymously().then( response => {
+
+                    const userData = {
+						username: this.animal_name,
+						ip_address: this.data_client.ip,
+						region: this.data_client.region,
+						country: this.data_client.country_name,
+						created_at: datetime,
+						last_login: datetime,
+                    }
+
+					console.log( 'Anonymous Login', response )
+					
+                    // Update user account displayName
+                    response.user.updateProfile({ username: this.animal_name })
+
+                    // Create db entry in 'users' collection for this anonymous user				
+					firestore.collection('users').doc(response.user.uid).set( userData )
+
+					this.is_login = true
+					this.username = this.animal_name
+
+					Metro.toast.create('Successfully Login as '+this.animal_name, null, 5000)
+
+					// redirect
+                    // this.$router.replace({
+                    // 	name: 'Home'
+					// })
+					
+                }).catch( error => {
+					Metro.toast.create(error.message, null, 5000)
+                })
+            },
+
+			logoutAnon() {
+				firebase.auth().signOut().then(response => {
+					
+					this.clear()
+					this.username = ''
+					this.text_msg = ''
+					this.is_login = ''
+					this.room = false
+					this.room_owner = false
+					this.messages = []
+
+					Metro.toast.create('Successfully logout', null, 5000)
+
+				}).catch(error => {
+					Metro.toast.create(error.message, null, 5000)
+				})
 			},
 
 			logout() {
@@ -397,7 +443,7 @@
 								data.push(change.doc.data())
 
 								if (change.doc.data().username != self.username && self.messages.length > 0) {
-									Metro.toast.create('New message from '+change.doc.data().username+' in '+room_name, null, 3000)
+									Metro.toast.create('New message from '+change.doc.data().username+' in '+room_name, null, 5000)
 								}
 							}
 						});
@@ -451,6 +497,27 @@
 				});
 			},
 
+			// Get random name
+			randomName() {
+				let array_name = []
+
+				for (let index = 0; index < nama_hewan.length; index++) {
+
+					array_name.push( nama_hewan[index]+' '+ kata_sifat[Math.floor(Math.random()*kata_sifat.length)] )
+				}
+
+				this.animal_name = array_name[Math.floor(Math.random()*array_name.length)]
+			},
+
+			// Get IP
+			getClient() {
+				var api = 'https://json.geoiplookup.io';
+				Axios.get(api)
+					.then(response => {
+						this.data_client = response.data
+					})
+			}
+
 		},
 
 		watch: {
@@ -477,6 +544,9 @@
 				this.is_login = localStorage.is_login;
 			}
 
+
+			this.randomName()
+			this.getClient()
 			this.roomListener()
 			this.messageListener()
 		},
