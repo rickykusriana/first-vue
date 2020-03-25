@@ -1,30 +1,19 @@
 
 export const nama_hewan = [ 
-    "alap-alap",
-    "anai-anai",
     "angsa",
-    "anoa",
     "arwana",
     "ayam",
-    "ayam kalkun",
-    "ayam kate",
 
     "badak",
-    "bajing",
     "bangau",
     "banteng",
     "bebek",
-    "bekantan",
     "bekicot",
     "belut",
     "beo",
     "berang-berang",
     "beruang",
-    "beruk",
-    "betok",
     "biawak",
-    "biri-biri",
-    "blekok",
     "buaya",
     "bunglon",
     "burung",
@@ -46,7 +35,6 @@ export const nama_hewan = [
 
     "gagak",
     "gajah",
-    "gajah laut",
     "gorila",
     "gurita",
 
@@ -63,26 +51,17 @@ export const nama_hewan = [
     "jerapah",
 
     "kadal",
-    "kakatua",
-    "kaki seribu",
     "kalajengking",
     "kalong",
     "kambing",
-    "kampret",
     "kancil",
     "kangguru",
-    "kebo",
-    "kecebong",
     "kecoa",
-    "kelabang",
-    "keledai",
     "kelelawar",
     "kelinci",
     "kenari",
     "keong",
     "kepiting",
-    "kera",
-    "kerbau",
     "kijang",
     "koala",
     "kodok",
@@ -92,7 +71,6 @@ export const nama_hewan = [
     "kudanil",
     "kudaponi",
     "kumbang",
-    "kupu kupu",
     "kupu-kupu",
     "kura-kura",
 
@@ -100,13 +78,9 @@ export const nama_hewan = [
     "landak",
     "lebah",
     "lele",
-    "lintah",
     "lumba-lumba",
-    "lutung",
-    "luwak",
 
-    "macan tutul",
-    "macan kumbang",
+    "macan",
     "marmut",
     "merpati",
     "mujaer",
@@ -115,7 +89,6 @@ export const nama_hewan = [
     "nyamuk",
 
     "onta",
-    "orangutan",
 
     "panda",
     "paus",
@@ -126,7 +99,6 @@ export const nama_hewan = [
     "rakun",
     "rayap",
 
-    "salmon",
     "sapi",
     "semut",
     "serigala",
@@ -139,8 +111,6 @@ export const nama_hewan = [
     "tawon",
     "tekukur",
     "tikus",
-    "tokek",
-    "tomcat",
     "trenggiling",
     "tupai",
 
@@ -150,16 +120,14 @@ export const nama_hewan = [
     "ulat",
     "undur-undur",
 
-    "walang sengit",
     "walet",
-    "wauwau",
 
     "zebra"
-
 ];
 
 
 export const kata_sifat = [ 
+    "bandel", 
     "manis", 
     "lucu", 
     "cute", 
@@ -172,7 +140,6 @@ export const kata_sifat = [
     "cekatan",
     "cerdik",
     "cerdas",
-    "congkak",
     "galau",
     "girang",
     "handal",

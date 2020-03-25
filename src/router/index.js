@@ -3,14 +3,19 @@ import VueRouter from 'vue-router'
 import VueChatScroll from 'vue-chat-scroll'
 import VueKeepScrollPosition from 'vue-keep-scroll-position'
 
+import VueTypedJs from 'vue-typed-js'
+
 // Init view
 import Home from '@/modules/home/Home.vue'
+import Test from '@/modules/home/Test.vue'
+
 import Blog from '@/modules/blog/Blog.vue'
 import Blog_detail from '@/modules/blog/Blog_detail.vue'
 import Profile from '@/modules/profile/Profile.vue'
 import Location from '@/modules/profile/Location.vue'
 import Portfolio from '@/modules/portfolio/Portfolio.vue'
 import Chat from '@/modules/chat/Chat.vue'
+import Private from '@/modules/private/Private.vue'
 // import Chat from '@/modules/chat/Chat-firebase-bck.vue'
 
 import Guest from '@/modules/public_api/Guest.vue'
@@ -20,6 +25,8 @@ import Pray from '@/modules/public_api/Pray_schedule.vue'
 Vue.use(VueRouter);
 Vue.use(VueChatScroll);
 Vue.use(VueKeepScrollPosition);
+
+Vue.use(VueTypedJs)
 
 const router = new VueRouter({
     linkActiveClass: 'active',
@@ -32,6 +39,12 @@ const router = new VueRouter({
             path: '/home',
             name: 'Home',
             component: Home
+        },
+        // Home
+        {
+            path: '/test',
+            name: 'Test',
+            component: Test
         },
 
         // Blog
@@ -83,6 +96,13 @@ const router = new VueRouter({
             path: '/chat',
             name: 'Chat',
             component: Chat
+        },
+        
+        // Private
+        {
+            path: '/private',
+            name: 'Private',
+            component: Private
         },
 
         {

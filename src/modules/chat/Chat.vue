@@ -10,8 +10,11 @@
                 <!-- Login form -->
                 <div v-if="!is_login" class="pt-10">
                     <center>
-                    <button data-role="ripple" class="button block primary" @click="loginAnon()">
-                        <span class="mif-enter pr-2"></span> Sign In
+                    <!-- <button data-role="ripple" class="button block primary" @click="loginAnon()">
+                        <span class="mif-enter pr-2"></span> Sign In Anonymously
+                    </button> -->
+                    <button data-role="ripple" class="button block alert" @click="loginGoogle()">
+                        <span class="mif-google-plus pr-2"></span> Sign In with Google
                     </button>
                     </center>
                 </div>
@@ -128,7 +131,7 @@
 
                                         <div class="message" v-for="(row, key) in messages[0]" :key="key">
 
-                                            <div class="d-flex flex-row-r p-1" v-if="username == row.username">
+                                            <div class="d-flex flex-row-r p-1" v-if="email == row.email">
                                                 <div class="p-2 bg-lightGreen">
                                                     {{ row.text }}
                                                 </div>
@@ -207,6 +210,7 @@
 				room: false,
 
 				username: '',
+				email: '',
 				text_msg: '',
 
 				is_login: false,
@@ -230,24 +234,28 @@
 			},
 
 			createRoom() {
-				if (this.room_name) {
-					this.room = this.room_name
 
-					// Set room
-					firestore.collection('chat').doc(this.room).set({ 
-						name: this.room, 
-						created_by: this.username,
-						created_at: datetime
-					});
+				Metro.toast.create('Under development', null, 5000)
 
-					Metro.toast.create('Room created', null, 5000)
-					this.is_required = ''
-					this.room_name = ''
-				}
-				else {
-					this.is_required = 'Room name is required'
-					this.$refs.room_name.focus()
-				}
+				// if (this.room_name) {
+				// 	this.room = this.room_name
+
+				// 	// Set room
+				// 	firestore.collection('chat').doc(this.room).set({ 
+				// 		name: this.room, 
+				// 		email: this.email, 
+				// 		created_by: this.username,
+				// 		created_at: datetime
+				// 	});
+
+				// 	Metro.toast.create('Room created', null, 5000)
+				// 	this.is_required = ''
+				// 	this.room_name = ''
+				// }
+				// else {
+				// 	this.is_required = 'Room name is required'
+				// 	this.$refs.room_name.focus()
+				// }
 			},
 
 			deleteRoom(room) {
@@ -276,6 +284,7 @@
 				this.room = false
 			},
 
+			// Auth 1 - Basic
 			login() {
 
 				if (this.username) {
@@ -315,7 +324,38 @@
 					this.$refs.username.focus()
 				}
             },
-            
+			
+			logout() {
+
+				let user = this.username
+				
+				firestore.collection("users").where("username", "==", user).get()
+				.then(function(querySnapshot) {
+
+					// Update status user login
+					querySnapshot.forEach(function(doc) {
+						
+						firestore.collection("users").doc(doc.id).update({ status: "offline" });
+					});
+				})
+				.catch(function(error) {
+					console.log("Error getting documents: ", error);
+				});
+
+				this.clear()
+				this.username = ''
+				this.email = ''
+				this.text_msg = ''
+				this.is_login = ''
+				this.room = false
+				this.room_owner = false
+				this.messages = []
+				
+				// this.$router.push({ name: 'Chat', path: '/chat' });
+
+			},
+			
+			// Auth 2 - Anonymous
             loginAnon() {
 				
                 firebase.auth().signInAnonymously().then( response => {
@@ -348,7 +388,7 @@
 					// })
 					
                 }).catch( error => {
-					Metro.toast.create(error.message, null, 5000)
+					Metro.toast.create(error.message, null, 5000, 'alert')
                 })
             },
 
@@ -357,6 +397,7 @@
 					
 					this.clear()
 					this.username = ''
+					this.email = ''
 					this.text_msg = ''
 					this.is_login = ''
 					this.room = false
@@ -366,38 +407,71 @@
 					Metro.toast.create('Successfully logout', null, 5000)
 
 				}).catch(error => {
-					Metro.toast.create(error.message, null, 5000)
+					Metro.toast.create(error.message, null, 5000, 'alert')
 				})
 			},
 
-			logout() {
+			// Auth 3 - Google
+			loginGoogle() {
 
-				let user = this.username
-				
-				firestore.collection("users").where("username", "==", user).get()
-				.then(function(querySnapshot) {
+				var provider = new firebase.auth.GoogleAuthProvider();
 
-					// Update status user login
-					querySnapshot.forEach(function(doc) {
-						
-						firestore.collection("users").doc(doc.id).update({ status: "offline" });
+				firebase.auth().signInWithPopup(provider).then( result => {
+					var token = result.credential.accessToken;
+					var user = result.user;
+					
+					// Check data users
+					firestore.collection("users").doc(user.email).get().then( doc => {
+						if (doc.exists) {
+							
+							// Update user account
+							firestore.collection('users').doc(doc.data().email).update({
+								last_login: datetime
+							});
+							
+							this.email = doc.data().email
+							this.username = doc.data().username
+						}
+						else {
+							const userData = {
+								email: user.email,
+								username: this.animal_name,
+								ip_address: this.data_client.ip,
+								region: this.data_client.region,
+								country: this.data_client.country_name,
+								created_at: datetime,
+								last_login: datetime,
+							}
+							
+							// Create db entry in 'users' collection
+							firestore.collection('users').doc(user.email).set( userData )
+
+							this.email = user.email
+							this.username = this.animal_name
+						}
+
+						this.is_login = true
+						Metro.toast.create('Successfully Login as '+this.username, null, 5000)
+
+					}).catch(function(error) {
+						Metro.toast.create(error.message, null, 5000, 'alert')
+						console.log("Error getting users:", error);
 					});
-				})
-				.catch(function(error) {
-					console.log("Error getting documents: ", error);
+
+				}).catch(function(error) {
+					// Handle Errors here.
+					var errorCode = error.code;
+					var errorMessage = error.message;
+					// The email of the user's account used.
+					var email = error.email;
+					// The firebase.auth.AuthCredential type that was used.
+					var credential = error.credential;
+					// ...
+
+					console.log(error)
 				});
-
-				this.clear()
-				this.username = ''
-				this.text_msg = ''
-				this.is_login = ''
-				this.room = false
-				this.room_owner = false
-				this.messages = []
-				
-				// this.$router.push({ name: 'Chat', path: '/chat' });
-
 			},
+
 
 			clear() {
 				this.is_required = ''
@@ -410,6 +484,7 @@
 
 					// Save chat
 					firestore.collection("chat").doc(this.room).collection("messages").add({
+						'email': this.email,
 						'username': this.username,
 						'text': this.text_msg,
 						'created_at': datetime
@@ -442,8 +517,9 @@
 							if (change.type === "added") {
 								data.push(change.doc.data())
 
-								if (change.doc.data().username != self.username && self.messages.length > 0) {
-									Metro.toast.create('New message from '+change.doc.data().username+' in '+room_name, null, 5000)
+								if (change.doc.data().email != self.email && self.messages.length > 0) {
+									Metro.toast.create('New message from '+change.doc.data().username+' in '+room_name, null, 5000, 'secondary')
+									self.playSound()
 								}
 							}
 						});
@@ -454,7 +530,7 @@
 					// Get room owner
 					firestore.collection("chat").doc(this.room).get().then(function(doc) {
 						if (doc.exists) {
-							self.room_owner = (self.username == doc.data().created_by ? true : false);
+							self.room_owner = (self.email == doc.data().email ? true : false);
 						}
 					}).catch(function(error) {
 						console.log("Error getting document:", error);
@@ -478,7 +554,7 @@
 							self.address.push(change.doc.data());
 						}
 						if (change.type === "removed") {
-							console.log("Removed city: ", change.doc.data().name);
+							console.log("Removed room: ", change.doc.data().name);
 
 							for (var i = 0; i < self.address.length-1; i++) {
 								if (self.address[i].name === change.doc.data().name) {
@@ -516,11 +592,21 @@
 					.then(response => {
 						this.data_client = response.data
 					})
+			},
+
+			// Notification
+			playSound() {
+				var audio = new Audio('/assets/sounds/me-too.mp3');
+				audio.play();
 			}
 
 		},
 
 		watch: {
+			email(new_email) {
+				localStorage.email = new_email;
+			},
+			
 			username(new_username) {
 				localStorage.username = new_username;
 			},
@@ -536,6 +622,10 @@
 		},
 
 		mounted() {
+			if (localStorage.email) {
+				this.email = localStorage.email;
+			}
+
 			if (localStorage.username) {
 				this.username = localStorage.username;
 			}
