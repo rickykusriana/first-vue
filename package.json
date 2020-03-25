@@ -4,6 +4,9 @@
   "description": "Trying for vuejs",
   "author": "Ricky Kusriana Subagja <rickykusriana@gmail.com>",
   "private": true,
+  "engines": {
+    "node": "10.15.3"
+  },
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
