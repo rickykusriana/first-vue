@@ -9,7 +9,8 @@ let config = {
 	databaseURL: "https://first-158002.firebaseio.com",
 	projectId: "first-158002",
 	storageBucket: "first-158002.appspot.com",
-	messagingSenderId: "541585712871"
+	messagingSenderId: "541585712871",
+	appId: "1:541585712871:web:3f8a651634471fcfae2442"
 }
 
 fb.initializeApp(config);

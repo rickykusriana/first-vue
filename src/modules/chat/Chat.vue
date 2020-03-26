@@ -122,10 +122,13 @@
                                 <keep-alive>
                                     
                                     <div 
+										style="
+										overflow: auto;
+										max-width: 100%;
+										height: calc(65vh - 15px);"
+
                                         class="messages panel" 
                                         ref="div_messages"
-                                        data-role="panel"
-                                        data-height="432"
                                         v-keep-scroll-position
                                         v-chat-scroll="{always: true, smooth: false}">
 
