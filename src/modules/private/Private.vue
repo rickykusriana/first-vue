@@ -294,9 +294,11 @@
 					.pauseFor(2507)
 					.changeDelay(70)
 					
-					.typeString('Hari itu')
+					.typeString('Hai adeku sayaaang')
 					.pauseFor(1000)
-					.typeString(' kita bertemu atau lebih tepatnya dipertemukan')
+					.typeString(', ade apa kabar?')
+					.pauseFor(1000)
+					.typeString(' semoga ade selalu baik2 aja ya, harus baik2 aja pokoknya, semangaaat terus')
 					
 					.pauseFor(1200)
 

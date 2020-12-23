@@ -4,6 +4,7 @@ import VueChatScroll from 'vue-chat-scroll'
 import VueKeepScrollPosition from 'vue-keep-scroll-position'
 
 import VueTypedJs from 'vue-typed-js'
+import VueCountdownTimer from 'vuejs-countdown-timer'
 
 // Init view
 import Home from '@/modules/home/Home.vue'
@@ -25,8 +26,29 @@ import Pray from '@/modules/public_api/Pray_schedule.vue'
 Vue.use(VueRouter);
 Vue.use(VueChatScroll);
 Vue.use(VueKeepScrollPosition);
-
 Vue.use(VueTypedJs)
+
+Vue.use(VueCountdownTimer);
+// Vue.component('countdown', {
+// 	data: function () {
+// 		return {
+// 			date: '2020-12-06 09.00.00'
+// 		}
+// 	},
+// 	template: `<vue-countdown-timer
+//                 :start-time="'2020-08-08 09:00:00'"
+//                 :end-time="'2020-12-06 00:00:00'"
+//                 :interval="1000"
+//                 :start-label="'Until start:'"
+//                 :end-label="''"
+//                 label-position="begin"
+//                 :end-text="'Event ended!'"
+//                 :day-txt="'days,'"
+//                 :hour-txt="'hours,'"
+//                 :minutes-txt="'minutes,'"
+//                 :seconds-txt="'seconds'">
+//             </vue-countdown-timer>`
+// })
 
 const router = new VueRouter({
     linkActiveClass: 'active',
